@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOP Ticket Details - Barron Manufacturing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0d0d0d;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #1a1a1a;
+            border-bottom: 1px solid #333;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff6b35;
+        }
+
+        .nav-breadcrumb {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .nav-breadcrumb a {
+            color: #ff6b35;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #ff6b35;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #ff5520;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title h1 {
+            font-size: 28px;
+            color: white;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #ff6b35;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #ff5520;
+        }
+
+        .btn-secondary {
+            background: #333;
+            color: #e0e0e0;
+            border: 1px solid #555;
+        }
+
+        .btn-secondary:hover {
+            background: #444;
+        }
+
+        .btn-danger {
+            background: #d32f2f;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b71c1c;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 13px;
+        }
+
+        .detail-label {
+            color: #888;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #e0e0e0;
+            text-align: right;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-open {
+            background: #ff9800;
+            color: white;
+        }
+
+        .status-charged {
+            background: #2196f3;
+            color: white;
+        }
+
+        .status-investigating {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status-closed {
+            background: #757575;
+            color: white;
+        }
+
+        .status-escalated {
+            background: #d32f2f;
+            color: white;
+        }
+
+        .workflow-visualization {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            padding: 15px;
+            background: #0d0d0d;
+            border-radius: 4px;
+        }
+
+        .workflow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            flex: 1;
+        }
+
+        .workflow-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+            color: white;
+        }
+
+        .workflow-circle.pending {
+            background: #555;
+        }
+
+        .workflow-circle.active {
+            background: #ff6b35;
+        }
+
+        .workflow-circle.completed {
+            background: #4caf50;
+        }
+
+        .workflow-label {
+            font-size: 11px;
+            text-align: center;
+            color: #888;
+        }
+
+        .workflow-arrow {
+            font-size: 20px;
+            color: #555;
+        }
+
+        .sla-alert {
+            background: #d32f2f;
+            color: white;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            border-left: 4px solid #fff;
+        }
+
+        .description-box {
+            background: #0d0d0d;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 3px solid #ff6b35;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            color: #e0e0e0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            color: #888;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 10px;
+            background: #0d0d0d;
+            border: 1px solid #333;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #ff6b35;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .error {
+            background: #d32f2f;
+            color: white;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .success {
+            background: #4caf50;
+            color: white;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .page-actions {
+                width: 100%;
+            }
+
+            .page-actions .btn {
+                flex: 1;
+            }
+
+            .workflow-visualization {
+                flex-wrap: wrap;
+            }
+
+            .workflow-arrow {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <div class="logo">⚙️ Barron</div>
+            <div class="nav-breadcrumb">
+                <a onclick="goToDashboard()">Dashboard</a> / 
+                <a onclick="goToSOPNCR()">SOP/NCR</a> / 
+                <span id="ticket-id">Ticket #</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="user-avatar" id="user-avatar">U</div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="page-title">
+            <h1>SOP Ticket Details</h1>
+            <div class="page-actions">
+                <button class="btn btn-primary" id="respond-btn" onclick="respondToTicket()" style="display:none;">Respond</button>
+                <button class="btn btn-secondary" id="reject-btn" onclick="rejectTicket()" style="display:none;">Reject</button>
+                <button class="btn btn-primary" id="hod-approve-btn" onclick="approveHOD()" style="display:none;">Approve NCR</button>
+            </div>
+        </div>
+
+        <div id="error-message" style="display:none;" class="error"></div>
+        <div id="success-message" style="display:none;" class="success"></div>
+
+        <div id="sla-alert" style="display:none;" class="sla-alert">
+            ⚠️ SLA Breach Alert - Response due within the specified timeframe
+        </div>
+
+        <div class="detail-grid">
+            <div class="card">
+                <div class="card-title">Ticket Information</div>
+                <div class="detail-row">
+                    <span class="detail-label">Ticket #</span>
+                    <span class="detail-value" id="ticket-number">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Status</span>
+                    <span class="detail-value" id="ticket-status"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Department</span>
+                    <span class="detail-value" id="department">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Created Date</span>
+                    <span class="detail-value" id="created-date">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Created By</span>
+                    <span class="detail-value" id="created-by">Loading...</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Workflow Status</div>
+                <div class="workflow-visualization" id="workflow-viz">
+                    <!-- Workflow visualization will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Failure Description</div>
+            <div class="description-box" id="description">Loading...</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">SLA Timeline</div>
+            <div class="detail-row">
+                <span class="detail-label">Response Due</span>
+                <span class="detail-value" id="response-due">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Resolution Due</span>
+                <span class="detail-value" id="resolution-due">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Time Remaining</span>
+                <span class="detail-value" id="time-remaining">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000/api';
+        const ticketId = new URLSearchParams(window.location.search).get('id');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user.name) {
+                document.getElementById('user-avatar').textContent = user.name[0].toUpperCase();
+            }
+
+            if (ticketId) {
+                loadTicketDetail();
+                setInterval(() => loadTicketDetail(), 30000); // Refresh every 30s
+            } else {
+                showError('Ticket ID not found');
+            }
+        });
+
+        async function loadTicketDetail() {
+            try {
+                const response = await fetch(`${API_BASE}/sop-ncr/tickets/${ticketId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load ticket');
+
+                const ticket = await response.json();
+                displayTicketDetail(ticket);
+            } catch (error) {
+                showError('Failed to load ticket: ' + error.message);
+            }
+        }
+
+        function displayTicketDetail(ticket) {
+            document.getElementById('ticket-number').textContent = `#${ticket.id}`;
+            document.getElementById('ticket-id').textContent = `Ticket #${ticket.id}`;
+            document.getElementById('department').textContent = ticket.department_name || 'N/A';
+            document.getElementById('created-date').textContent = formatDate(ticket.created_at);
+            document.getElementById('created-by').textContent = ticket.created_by_name || 'System';
+            document.getElementById('description').textContent = ticket.failure_description || 'No description provided';
+
+            // Status badge
+            const statusElement = document.getElementById('ticket-status');
+            statusElement.textContent = (ticket.status || 'open').replace(/_/g, ' ').toUpperCase();
+            statusElement.className = `status-badge status-${ticket.status || 'open'}`;
+
+            // Check for SLA breach
+            if (ticket.sla_breached) {
+                document.getElementById('sla-alert').style.display = 'block';
+            }
+
+            // Set SLA times
+            document.getElementById('response-due').textContent = formatDate(ticket.response_due_date);
+            document.getElementById('resolution-due').textContent = formatDate(ticket.resolution_due_date);
+            const timeRemaining = calculateTimeRemaining(ticket.response_due_date);
+            document.getElementById('time-remaining').textContent = timeRemaining;
+
+            // Render workflow
+            renderWorkflow(ticket);
+
+            // Show appropriate action buttons
+            if (ticket.status === 'open') {
+                document.getElementById('respond-btn').style.display = 'block';
+            } else if (ticket.status === 'escalated') {
+                document.getElementById('hod-approve-btn').style.display = 'block';
+            }
+        }
+
+        function renderWorkflow(ticket) {
+            const steps = [
+                { name: 'Open', id: 'open' },
+                { name: 'Charged Dept', id: 'charged' },
+                { name: 'HOD Decision', id: 'hod' },
+                { name: 'NCR/Closed', id: 'closed' }
+            ];
+
+            let currentStepIndex = 0;
+            if (ticket.status === 'escalated') currentStepIndex = 1;
+            else if (ticket.status === 'investigating') currentStepIndex = 2;
+            else if (ticket.status === 'closed') currentStepIndex = 3;
+
+            let html = '';
+            steps.forEach((step, idx) => {
+                let className = 'pending';
+                let content = idx + 1;
+                
+                if (idx < currentStepIndex) {
+                    className = 'completed';
+                    content = '✓';
+                } else if (idx === currentStepIndex) {
+                    className = 'active';
+                }
+
+                html += `
+                    <div class="workflow-step">
+                        <div class="workflow-circle ${className}">${content}</div>
+                        <div class="workflow-label">${step.name}</div>
+                    </div>
+                `;
+
+                if (idx < steps.length - 1) {
+                    html += '<div class="workflow-arrow">→</div>';
+                }
+            });
+
+            document.getElementById('workflow-viz').innerHTML = html;
+        }
+
+        async function respondToTicket() {
+            const response = prompt('Enter your response to this SOP failure:');
+            if (!response) return;
+
+            try {
+                const result = await fetch(`${API_BASE}/sop-ncr/tickets/${ticketId}/reassign`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        notes: response
+                    })
+                });
+
+                if (!result.ok) throw new Error('Failed to respond');
+
+                showSuccess('Response recorded');
+                setTimeout(() => loadTicketDetail(), 1000);
+            } catch (error) {
+                showError('Failed to respond: ' + error.message);
+            }
+        }
+
+        async function rejectTicket() {
+            const reason = prompt('Provide rejection reason:');
+            if (!reason) return;
+
+            try {
+                const result = await fetch(`${API_BASE}/sop-ncr/tickets/${ticketId}/reject`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        notes: reason
+                    })
+                });
+
+                if (!result.ok) throw new Error('Failed to reject');
+
+                showSuccess('Ticket rejected and escalated to HOD');
+                setTimeout(() => loadTicketDetail(), 1000);
+            } catch (error) {
+                showError('Failed to reject: ' + error.message);
+            }
+        }
+
+        async function approveHOD() {
+            const decision = prompt('Enter HOD decision:');
+            if (!decision) return;
+
+            try {
+                const result = await fetch(`${API_BASE}/sop-ncr/tickets/${ticketId}/hod-decision`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        decision,
+                        notes: decision
+                    })
+                });
+
+                if (!result.ok) throw new Error('Failed to record decision');
+
+                showSuccess('HOD decision recorded');
+                setTimeout(() => loadTicketDetail(), 1000);
+            } catch (error) {
+                showError('Failed to record decision: ' + error.message);
+            }
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            return new Date(dateString).toLocaleDateString();
+        }
+
+        function calculateTimeRemaining(dueDate) {
+            if (!dueDate) return 'N/A';
+            const due = new Date(dueDate);
+            const now = new Date();
+            const hours = Math.ceil((due - now) / (1000 * 60 * 60));
+            if (hours < 0) return 'Overdue';
+            if (hours < 24) return `${hours}h remaining`;
+            return `${Math.ceil(hours / 24)}d remaining`;
+        }
+
+        function showError(message) {
+            const el = document.getElementById('error-message');
+            el.textContent = message;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 5000);
+        }
+
+        function showSuccess(message) {
+            const el = document.getElementById('success-message');
+            el.textContent = message;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 5000);
+        }
+
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+
+        function goToSOPNCR() {
+            window.location.href = 'sop-ncr.html';
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

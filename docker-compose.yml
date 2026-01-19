@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: barron_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=mysql+pymysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+      - REDIS_URL=redis://${REDIS_HOST}:${REDIS_PORT}
+      - SECRET_KEY=${SECRET_KEY}
+    volumes:
+      - ./app/backend/app:/app/backend/app
+    command: python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      - db
+    networks:
+      - barron_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    image: python:3.11-slim
+    container_name: barron_frontend
+    ports:
+      - "8080:8080"
+    working_dir: /app/frontend
+    volumes:
+      - ./app/frontend:/app/frontend
+    command: python -m http.server 8080
+    networks:
+      - barron_network
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O-", "http://localhost:8080/login.html"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  db:
+    image: mysql:8.0
+    container_name: barron_db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - barron_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: barron_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - barron_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  barron_network:
+    driver: bridge

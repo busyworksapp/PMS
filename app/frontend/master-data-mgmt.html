@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Data Management - Barron Manufacturing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0d0d0d;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #1a1a1a;
+            border-bottom: 1px solid #333;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff6b35;
+        }
+
+        .nav-breadcrumb {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .nav-breadcrumb a {
+            color: #ff6b35;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #ff6b35;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #ff5520;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title h1 {
+            font-size: 28px;
+            color: white;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #ff6b35;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #ff5520;
+        }
+
+        .btn-secondary {
+            background: #333;
+            color: #e0e0e0;
+            border: 1px solid #555;
+        }
+
+        .btn-secondary:hover {
+            background: #444;
+        }
+
+        .btn-danger {
+            background: #d32f2f;
+            color: white;
+            font-size: 11px;
+            padding: 6px 12px;
+        }
+
+        .btn-danger:hover {
+            background: #b71c1c;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid #333;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: #ff6b35;
+            border-bottom-color: #ff6b35;
+        }
+
+        .tab:hover {
+            color: #e0e0e0;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 20px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead {
+            background: #0d0d0d;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            color: #888;
+            font-weight: 600;
+            border-bottom: 1px solid #333;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #333;
+        }
+
+        tbody tr:hover {
+            background: #252525;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            color: #888;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 10px;
+            background: #0d0d0d;
+            border: 1px solid #333;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #ff6b35;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .form-buttons button {
+            flex: 1;
+        }
+
+        .error {
+            background: #d32f2f;
+            color: white;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .success {
+            background: #4caf50;
+            color: white;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+
+        .spinner {
+            border: 2px solid #333;
+            border-top: 2px solid #ff6b35;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .page-actions {
+                width: 100%;
+            }
+
+            .page-actions .btn {
+                flex: 1;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <div class="logo">⚙️ Barron</div>
+            <div class="nav-breadcrumb">
+                <a onclick="goToDashboard()">Dashboard</a> / 
+                <span>Master Data</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="user-avatar" id="user-avatar">U</div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <div class="page-title">
+                <h1>Master Data Management</h1>
+            </div>
+        </div>
+
+        <div id="error-message" style="display:none;" class="error"></div>
+        <div id="success-message" style="display:none;" class="success"></div>
+
+        <div class="card">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('departments')">Departments</button>
+                <button class="tab" onclick="switchTab('products')">Products</button>
+                <button class="tab" onclick="switchTab('machines')">Machines</button>
+            </div>
+
+            <!-- Departments Tab -->
+            <div id="departments" class="tab-content active">
+                <div style="margin-bottom: 20px;">
+                    <button class="btn btn-primary" onclick="openDeptModal()">+ New Department</button>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Department</th>
+                                <th>Manager</th>
+                                <th>Location</th>
+                                <th>Active</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="departments-body">
+                            <tr><td colspan="5" style="text-align: center;"><div class="spinner"></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Products Tab -->
+            <div id="products" class="tab-content">
+                <div style="margin-bottom: 20px;">
+                    <button class="btn btn-primary" onclick="openProductModal()">+ New Product</button>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>SKU</th>
+                                <th>Category</th>
+                                <th>Active</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-body">
+                            <tr><td colspan="5" style="text-align: center;"><div class="spinner"></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Machines Tab -->
+            <div id="machines" class="tab-content">
+                <div style="margin-bottom: 20px;">
+                    <button class="btn btn-primary" onclick="openMachineModal()">+ New Machine</button>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Machine Name</th>
+                                <th>Location</th>
+                                <th>Capacity</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="machines-body">
+                            <tr><td colspan="5" style="text-align: center;"><div class="spinner"></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Department Modal -->
+    <div id="dept-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeDeptModal()">&times;</button>
+            <h2 class="modal-title" id="dept-modal-title">New Department</h2>
+            
+            <form onsubmit="saveDept(event)">
+                <div class="form-group">
+                    <label class="form-label">Department Name</label>
+                    <input type="text" class="form-input" id="dept-name" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Manager Name</label>
+                    <input type="text" class="form-input" id="dept-manager">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Location</label>
+                    <input type="text" class="form-input" id="dept-location">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" id="dept-active" checked> Active
+                    </label>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeDeptModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeProductModal()">&times;</button>
+            <h2 class="modal-title">New Product</h2>
+            
+            <form onsubmit="saveProduct(event)">
+                <div class="form-group">
+                    <label class="form-label">Product Name</label>
+                    <input type="text" class="form-input" id="product-name" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">SKU</label>
+                    <input type="text" class="form-input" id="product-sku" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <input type="text" class="form-input" id="product-category">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="product-desc"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" id="product-active" checked> Active
+                    </label>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Machine Modal -->
+    <div id="machine-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeMachineModal()">&times;</button>
+            <h2 class="modal-title">New Machine</h2>
+            
+            <form onsubmit="saveMachine(event)">
+                <div class="form-group">
+                    <label class="form-label">Machine Name</label>
+                    <input type="text" class="form-input" id="machine-name" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Location</label>
+                    <input type="text" class="form-input" id="machine-location">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Capacity (Units/Hour)</label>
+                    <input type="number" class="form-input" id="machine-capacity" step="0.1">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" id="machine-status">
+                        <option value="operational">Operational</option>
+                        <option value="maintenance">Under Maintenance</option>
+                        <option value="idle">Idle</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-textarea" id="machine-notes"></textarea>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeMachineModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000/api';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user.name) {
+                document.getElementById('user-avatar').textContent = user.name[0].toUpperCase();
+            }
+
+            loadDepartments();
+            loadProducts();
+            loadMachines();
+        });
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Departments
+        async function loadDepartments() {
+            try {
+                const response = await fetch(`${API_BASE}/master/departments?skip=0&limit=50`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const depts = await response.json();
+                const tbody = document.getElementById('departments-body');
+                tbody.innerHTML = '';
+
+                if (depts.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No departments</td></tr>';
+                    return;
+                }
+
+                depts.forEach(dept => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${dept.name}</td>
+                            <td>${dept.manager_name || 'N/A'}</td>
+                            <td>${dept.location || 'N/A'}</td>
+                            <td>${dept.active ? '✓' : '✗'}</td>
+                            <td>
+                                <button class="btn btn-danger" onclick="editDept(${dept.id})">Edit</button>
+                                <button class="btn btn-danger" onclick="deleteDept(${dept.id})">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                console.error('Failed to load departments:', error);
+            }
+        }
+
+        function openDeptModal() {
+            document.getElementById('dept-modal-title').textContent = 'New Department';
+            document.getElementById('dept-name').value = '';
+            document.getElementById('dept-manager').value = '';
+            document.getElementById('dept-location').value = '';
+            document.getElementById('dept-active').checked = true;
+            document.getElementById('dept-modal').classList.add('active');
+        }
+
+        function closeDeptModal() {
+            document.getElementById('dept-modal').classList.remove('active');
+        }
+
+        async function saveDept(e) {
+            e.preventDefault();
+            const name = document.getElementById('dept-name').value;
+            const manager_name = document.getElementById('dept-manager').value;
+            const location = document.getElementById('dept-location').value;
+            const active = document.getElementById('dept-active').checked;
+
+            try {
+                const response = await fetch(`${API_BASE}/master/departments`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, manager_name, location, active })
+                });
+
+                if (!response.ok) throw new Error('Failed to save');
+
+                showSuccess('Department saved successfully');
+                closeDeptModal();
+                loadDepartments();
+            } catch (error) {
+                showError('Failed to save department: ' + error.message);
+            }
+        }
+
+        async function deleteDept(id) {
+            if (!confirm('Delete this department?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/master/departments/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+
+                if (!response.ok) throw new Error('Failed to delete');
+
+                showSuccess('Department deleted');
+                loadDepartments();
+            } catch (error) {
+                showError('Failed to delete: ' + error.message);
+            }
+        }
+
+        // Products
+        async function loadProducts() {
+            try {
+                const response = await fetch(`${API_BASE}/master/products?skip=0&limit=50`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const products = await response.json();
+                const tbody = document.getElementById('products-body');
+                tbody.innerHTML = '';
+
+                if (products.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No products</td></tr>';
+                    return;
+                }
+
+                products.forEach(prod => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${prod.name}</td>
+                            <td>${prod.sku || 'N/A'}</td>
+                            <td>${prod.category || 'N/A'}</td>
+                            <td>${prod.active ? '✓' : '✗'}</td>
+                            <td>
+                                <button class="btn btn-danger" onclick="editProduct(${prod.id})">Edit</button>
+                                <button class="btn btn-danger" onclick="deleteProduct(${prod.id})">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                console.error('Failed to load products:', error);
+            }
+        }
+
+        function openProductModal() {
+            document.getElementById('product-name').value = '';
+            document.getElementById('product-sku').value = '';
+            document.getElementById('product-category').value = '';
+            document.getElementById('product-desc').value = '';
+            document.getElementById('product-active').checked = true;
+            document.getElementById('product-modal').classList.add('active');
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.remove('active');
+        }
+
+        async function saveProduct(e) {
+            e.preventDefault();
+            const name = document.getElementById('product-name').value;
+            const sku = document.getElementById('product-sku').value;
+            const category = document.getElementById('product-category').value;
+            const active = document.getElementById('product-active').checked;
+
+            try {
+                const response = await fetch(`${API_BASE}/master/products`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, sku, category, active })
+                });
+
+                if (!response.ok) throw new Error('Failed to save');
+
+                showSuccess('Product saved successfully');
+                closeProductModal();
+                loadProducts();
+            } catch (error) {
+                showError('Failed to save product: ' + error.message);
+            }
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm('Delete this product?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/master/products/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+
+                if (!response.ok) throw new Error('Failed to delete');
+
+                showSuccess('Product deleted');
+                loadProducts();
+            } catch (error) {
+                showError('Failed to delete: ' + error.message);
+            }
+        }
+
+        // Machines
+        async function loadMachines() {
+            try {
+                const response = await fetch(`${API_BASE}/master/machines?skip=0&limit=50`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const machines = await response.json();
+                const tbody = document.getElementById('machines-body');
+                tbody.innerHTML = '';
+
+                if (machines.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No machines</td></tr>';
+                    return;
+                }
+
+                machines.forEach(mach => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${mach.name}</td>
+                            <td>${mach.location || 'N/A'}</td>
+                            <td>${mach.capacity || 'N/A'}</td>
+                            <td>${mach.status || 'operational'}</td>
+                            <td>
+                                <button class="btn btn-danger" onclick="editMachine(${mach.id})">Edit</button>
+                                <button class="btn btn-danger" onclick="deleteMachine(${mach.id})">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                console.error('Failed to load machines:', error);
+            }
+        }
+
+        function openMachineModal() {
+            document.getElementById('machine-name').value = '';
+            document.getElementById('machine-location').value = '';
+            document.getElementById('machine-capacity').value = '';
+            document.getElementById('machine-status').value = 'operational';
+            document.getElementById('machine-notes').value = '';
+            document.getElementById('machine-modal').classList.add('active');
+        }
+
+        function closeMachineModal() {
+            document.getElementById('machine-modal').classList.remove('active');
+        }
+
+        async function saveMachine(e) {
+            e.preventDefault();
+            const name = document.getElementById('machine-name').value;
+            const location = document.getElementById('machine-location').value;
+            const capacity = parseFloat(document.getElementById('machine-capacity').value) || 0;
+            const status = document.getElementById('machine-status').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/master/machines`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, location, capacity, status })
+                });
+
+                if (!response.ok) throw new Error('Failed to save');
+
+                showSuccess('Machine saved successfully');
+                closeMachineModal();
+                loadMachines();
+            } catch (error) {
+                showError('Failed to save machine: ' + error.message);
+            }
+        }
+
+        async function deleteMachine(id) {
+            if (!confirm('Delete this machine?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/master/machines/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+
+                if (!response.ok) throw new Error('Failed to delete');
+
+                showSuccess('Machine deleted');
+                loadMachines();
+            } catch (error) {
+                showError('Failed to delete: ' + error.message);
+            }
+        }
+
+        // Utilities
+        function showError(message) {
+            const el = document.getElementById('error-message');
+            el.textContent = message;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 5000);
+        }
+
+        function showSuccess(message) {
+            const el = document.getElementById('success-message');
+            el.textContent = message;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 5000);
+        }
+
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

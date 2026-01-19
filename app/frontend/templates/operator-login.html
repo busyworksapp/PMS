@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Operator Login - Barron Production Management</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="container" style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+    <div class="card" style="width: 100%; max-width: 400px;">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <h1 class="logo" style="justify-content: center;">
+          <span>⚙️</span> BARRON
+        </h1>
+        <p class="text-muted">Operator Access</p>
+      </div>
+
+      <div id="operator-login-form">
+        <p class="text-center text-muted mb-3">
+          Enter your Employee Number to login
+        </p>
+
+        <div class="form-group">
+          <label for="employee-number" class="required">Employee Number</label>
+          <input type="text" id="employee-number" placeholder="Enter employee number" required>
+        </div>
+
+        <button type="button" class="btn-primary" style="width: 100%;" onclick="handleOperatorLogin()">
+          Access Job Board
+        </button>
+
+        <p class="text-center text-muted" style="margin-top: 1rem;">
+          <a href="/login.html">← Back to Main Login</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/main.js"></script>
+  <script>
+    async function handleOperatorLogin() {
+      const employeeNumber = document.getElementById("employee-number").value;
+
+      if (!employeeNumber) {
+        showAlert("Please enter your employee number", "warning");
+        return;
+      }
+
+      try {
+        await operatorLogin(employeeNumber);
+        showAlert("Login successful", "success");
+        setTimeout(() => {
+          window.location.href = "/operator-jobs.html";
+        }, 1000);
+      } catch (error) {
+        showAlert("Login failed: " + error.message, "danger");
+      }
+    }
+
+    document.addEventListener("keypress", function (event) {
+      if (event.key === "Enter") {
+        handleOperatorLogin();
+      }
+    });
+  </script>
+</body>
+</html>

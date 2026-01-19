@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defect Details - Barron Manufacturing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0d0d0d;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #1a1a1a;
+            border-bottom: 1px solid #333;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff6b35;
+        }
+
+        .nav-breadcrumb {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .nav-breadcrumb a {
+            color: #ff6b35;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #ff6b35;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #ff5520;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title h1 {
+            font-size: 28px;
+            color: white;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #ff6b35;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #ff5520;
+        }
+
+        .btn-secondary {
+            background: #333;
+            color: #e0e0e0;
+            border: 1px solid #555;
+        }
+
+        .btn-secondary:hover {
+            background: #444;
+        }
+
+        .btn-danger {
+            background: #d32f2f;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b71c1c;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 13px;
+        }
+
+        .detail-label {
+            color: #888;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #e0e0e0;
+            text-align: right;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-open {
+            background: #ff9800;
+            color: white;
+        }
+
+        .status-approved {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status-rejected {
+            background: #d32f2f;
+            color: white;
+        }
+
+        .status-closed {
+            background: #757575;
+            color: white;
+        }
+
+        .severity-critical {
+            background: #d32f2f;
+            color: white;
+        }
+
+        .severity-high {
+            background: #ff9800;
+            color: white;
+        }
+
+        .severity-medium {
+            background: #fbc02d;
+            color: white;
+        }
+
+        .severity-low {
+            background: #4caf50;
+            color: white;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid #333;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: #ff6b35;
+            border-bottom-color: #ff6b35;
+        }
+
+        .tab:hover {
+            color: #e0e0e0;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .description-box {
+            background: #0d0d0d;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 3px solid #ff6b35;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            color: #e0e0e0;
+        }
+
+        .action-item {
+            background: #252525;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .action-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .action-type {
+            font-weight: 600;
+            color: #ff6b35;
+        }
+
+        .action-timestamp {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .action-content {
+            font-size: 13px;
+            color: #e0e0e0;
+            margin-top: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            color: #888;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 10px;
+            background: #0d0d0d;
+            border: 1px solid #333;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #ff6b35;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .error {
+            background: #d32f2f;
+            color: white;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .success {
+            background: #4caf50;
+            color: white;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .alert {
+            background: #ff9800;
+            color: white;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .page-actions {
+                width: 100%;
+            }
+
+            .page-actions .btn {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <div class="logo">⚙️ Barron</div>
+            <div class="nav-breadcrumb">
+                <a onclick="goToDashboard()">Dashboard</a> / 
+                <a onclick="goToDefects()">Defects</a> / 
+                <span id="defect-id">Defect #</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="user-avatar" id="user-avatar">U</div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="page-title">
+            <h1>Defect Details</h1>
+            <div class="page-actions">
+                <button class="btn btn-primary" id="approve-btn" onclick="approveDefect()" style="display:none;">Approve</button>
+                <button class="btn btn-secondary" onclick="rejectDefect()" id="reject-btn" style="display:none;">Reject</button>
+            </div>
+        </div>
+
+        <div id="error-message" style="display:none;" class="error"></div>
+        <div id="success-message" style="display:none;" class="success"></div>
+
+        <div class="detail-grid">
+            <div class="card">
+                <div class="card-title">Defect Information</div>
+                <div class="detail-row">
+                    <span class="detail-label">Ticket #</span>
+                    <span class="detail-value" id="ticket-number">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Type</span>
+                    <span class="detail-value" id="defect-type"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Status</span>
+                    <span class="detail-value" id="defect-status"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Severity</span>
+                    <span class="detail-value" id="severity"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Quantity Affected</span>
+                    <span class="detail-value" id="quantity-affected">Loading...</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Related Information</div>
+                <div class="detail-row">
+                    <span class="detail-label">Order #</span>
+                    <span class="detail-value"><a onclick="goToOrder()" style="color: #ff6b35; cursor: pointer;" id="order-link">Loading...</a></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Created Date</span>
+                    <span class="detail-value" id="created-date">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Created By</span>
+                    <span class="detail-value" id="created-by">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Hold Status</span>
+                    <span class="detail-value" id="hold-status"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Description</div>
+            <div class="description-box" id="description">Loading...</div>
+        </div>
+
+        <div class="card">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('timeline')">Timeline</button>
+                <button class="tab" onclick="switchTab('attachments')">Attachments</button>
+            </div>
+
+            <div id="timeline" class="tab-content active">
+                <div id="timeline-list">
+                    <!-- Timeline items will be inserted here -->
+                </div>
+            </div>
+
+            <div id="attachments" class="tab-content">
+                <div id="attachments-list" style="text-align: center; color: #888; padding: 20px;">
+                    No attachments
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000/api';
+        const defectId = new URLSearchParams(window.location.search).get('id');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user.name) {
+                document.getElementById('user-avatar').textContent = user.name[0].toUpperCase();
+            }
+
+            if (defectId) {
+                loadDefectDetail();
+            } else {
+                showError('Defect ID not found');
+            }
+        });
+
+        async function loadDefectDetail() {
+            try {
+                const response = await fetch(`${API_BASE}/defects/rejects/${defectId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load defect');
+
+                const defect = await response.json();
+                displayDefectDetail(defect);
+                loadTimeline(defectId);
+            } catch (error) {
+                showError('Failed to load defect: ' + error.message);
+            }
+        }
+
+        function displayDefectDetail(defect) {
+            document.getElementById('ticket-number').textContent = `#${defect.id}`;
+            document.getElementById('defect-id').textContent = `Defect #${defect.id}`;
+            document.getElementById('defect-type').textContent = (defect.type || 'internal').toUpperCase();
+            document.getElementById('quantity-affected').textContent = defect.quantity_affected || '0';
+            document.getElementById('created-date').textContent = formatDate(defect.created_at);
+            document.getElementById('created-by').textContent = defect.created_by_name || 'System';
+            document.getElementById('description').textContent = defect.description || 'No description provided';
+            document.getElementById('order-link').textContent = `#${defect.order_id || 'N/A'}`;
+
+            // Status badge
+            const statusElement = document.getElementById('defect-status');
+            statusElement.textContent = (defect.status || 'open').toUpperCase();
+            statusElement.className = `status-badge status-${defect.status || 'open'}`;
+
+            // Severity badge
+            const severityElement = document.getElementById('severity');
+            severityElement.textContent = (defect.severity || 'medium').toUpperCase();
+            severityElement.className = `status-badge severity-${defect.severity || 'medium'}`;
+
+            // Hold status
+            const holdElement = document.getElementById('hold-status');
+            if (defect.auto_hold) {
+                holdElement.innerHTML = '<span class="status-badge status-open">Order On Hold</span>';
+            } else {
+                holdElement.innerHTML = '<span class="status-badge status-closed">No Hold</span>';
+            }
+
+            // Show approve/reject buttons based on status
+            if (defect.status === 'open') {
+                document.getElementById('approve-btn').style.display = 'block';
+                document.getElementById('reject-btn').style.display = 'block';
+            }
+        }
+
+        async function loadTimeline(defectId) {
+            try {
+                // Create mock timeline since backend doesn't have this endpoint yet
+                const timelineList = document.getElementById('timeline-list');
+                timelineList.innerHTML = `
+                    <div class="action-item">
+                        <div class="action-item-header">
+                            <span class="action-type">Created</span>
+                            <span class="action-timestamp" id="created-timestamp"></span>
+                        </div>
+                        <div class="action-content">
+                            Defect ticket created
+                        </div>
+                    </div>
+                `;
+                document.getElementById('created-timestamp').textContent = new Date().toLocaleString();
+            } catch (error) {
+                console.error('Failed to load timeline:', error);
+            }
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        async function approveDefect() {
+            if (!confirm('Approve this defect?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/defects/rejects/${defectId}/approve`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ notes: 'Approved' })
+                });
+
+                if (!response.ok) throw new Error('Failed to approve');
+
+                showSuccess('Defect approved');
+                setTimeout(() => loadDefectDetail(), 1000);
+            } catch (error) {
+                showError('Failed to approve: ' + error.message);
+            }
+        }
+
+        async function rejectDefect() {
+            const notes = prompt('Please provide rejection notes:');
+            if (!notes) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/defects/rejects/${defectId}/status`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        status: 'rejected',
+                        notes
+                    })
+                });
+
+                if (!response.ok) throw new Error('Failed to reject');
+
+                showSuccess('Defect rejected');
+                setTimeout(() => goToDefects(), 2000);
+            } catch (error) {
+                showError('Failed to reject: ' + error.message);
+            }
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            return new Date(dateString).toLocaleDateString();
+        }
+
+        function showError(message) {
+            const el = document.getElementById('error-message');
+            el.textContent = message;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 5000);
+        }
+
+        function showSuccess(message) {
+            const el = document.getElementById('success-message');
+            el.textContent = message;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 5000);
+        }
+
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+
+        function goToDefects() {
+            window.location.href = 'defects-new.html';
+        }
+
+        function goToOrder() {
+            const orderId = new URLSearchParams(window.location.search).get('order_id');
+            if (orderId) {
+                window.location.href = `order-detail.html?id=${orderId}`;
+            }
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

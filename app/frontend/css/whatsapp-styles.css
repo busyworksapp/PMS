@@ -1,0 +1,666 @@
+/**
+ * WhatsApp Widget CSS
+ * Styling for WhatsApp messaging interface
+ * 
+ * Color scheme:
+ * - Primary: #25D366 (WhatsApp green)
+ * - Secondary: #20BA5A (darker green)
+ * - Sent: #DCF8C6 (light green)
+ * - Received: #E5E5EA (light gray)
+ */
+
+/* ==================== WIDGET CONTAINER ==================== */
+
+.whatsapp-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 400px;
+    height: 600px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 40px rgba(0, 0, 0, 0.16);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.whatsapp-widget.minimized {
+    height: 56px;
+}
+
+.whatsapp-widget.minimized .whatsapp-container {
+    display: none;
+}
+
+/* ==================== HEADER ==================== */
+
+.whatsapp-header {
+    background: linear-gradient(135deg, #25D366 0%, #20BA5A 100%);
+    color: white;
+    padding: 12px 15px;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.whatsapp-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ddd;
+    transition: background 0.3s ease;
+}
+
+.status-indicator.status-connected {
+    background: #4ade80;
+    box-shadow: 0 0 8px rgba(74, 222, 128, 0.5);
+}
+
+.status-indicator.status-error {
+    background: #ef4444;
+    animation: pulse-error 2s infinite;
+}
+
+.status-indicator.status-disconnected {
+    background: #f59e0b;
+}
+
+@keyframes pulse-error {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.whatsapp-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.whatsapp-controls button {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.whatsapp-controls button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+}
+
+.whatsapp-controls button:active {
+    transform: scale(0.95);
+}
+
+/* ==================== CONTAINER ==================== */
+
+.whatsapp-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+}
+
+/* ==================== CONTACT LIST ==================== */
+
+.whatsapp-contacts {
+    width: 35%;
+    border-right: 1px solid #e5e5ea;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #fff;
+}
+
+.contact-search {
+    padding: 12px;
+    border: none;
+    border-bottom: 1px solid #e5e5ea;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.contact-search:focus {
+    border-bottom-color: #25D366;
+    background: #f0f9f4;
+}
+
+.contact-list {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.contact-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.contact-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.contact-list::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.contact-list::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+.contact-item {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.contact-item:hover {
+    background: #f5f5f5;
+}
+
+.contact-item.active {
+    background: #e8f5e9;
+    border-left: 3px solid #25D366;
+    padding-left: 9px;
+}
+
+.contact-item.unread {
+    background: #f0f9f4;
+    font-weight: 500;
+}
+
+.contact-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.contact-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #000;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.contact-preview {
+    font-size: 12px;
+    color: #999;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.unread-badge {
+    background: #25D366;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+    flex-shrink: 0;
+    margin-left: 8px;
+}
+
+.no-contacts {
+    padding: 20px;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+}
+
+.loading {
+    padding: 20px;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+}
+
+/* ==================== CHAT AREA ==================== */
+
+.whatsapp-chat {
+    width: 65%;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    min-width: 0;
+}
+
+.chat-header {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e5e5ea;
+    background: #f5f5f5;
+    flex-shrink: 0;
+}
+
+.no-contact-selected {
+    color: #999;
+    font-size: 14px;
+    text-align: center;
+    padding: 20px;
+}
+
+.header-info h3 {
+    margin: 0 0 3px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #000;
+}
+
+.header-status {
+    font-size: 12px;
+    color: #999;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: #fff;
+    min-height: 0;
+}
+
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+.no-messages {
+    padding: 40px 20px;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+}
+
+/* ==================== MESSAGES ==================== */
+
+.message-bubble {
+    margin-bottom: 4px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    max-width: 85%;
+    word-wrap: break-word;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 14px;
+    line-height: 1.4;
+    animation: messageSlide 0.3s ease;
+}
+
+@keyframes messageSlide {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message-bubble.sent {
+    background: #DCF8C6;
+    margin-left: auto;
+    text-align: left;
+    color: #000;
+}
+
+.message-bubble.received {
+    background: #e5e5ea;
+    margin-right: auto;
+    text-align: left;
+    color: #000;
+}
+
+.message-text {
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+.message-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+}
+
+.message-time {
+    color: #999;
+    font-size: 12px;
+}
+
+.message-status {
+    color: #25D366;
+    font-size: 12px;
+    margin-left: 4px;
+}
+
+/* ==================== INPUT AREA ==================== */
+
+.chat-input-area {
+    padding: 12px;
+    border-top: 1px solid #e5e5ea;
+    display: flex;
+    gap: 8px;
+    background: #fff;
+    flex-shrink: 0;
+}
+
+.message-input {
+    flex: 1;
+    border: 1px solid #e5e5ea;
+    border-radius: 20px;
+    padding: 10px 15px;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    resize: none;
+    max-height: 100px;
+}
+
+.message-input:focus {
+    border-color: #25D366;
+    box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
+}
+
+.message-input:disabled {
+    background: #f5f5f5;
+    color: #999;
+    cursor: not-allowed;
+}
+
+.send-btn {
+    background: #25D366;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.send-btn:hover:not(:disabled) {
+    background: #20BA5A;
+    transform: scale(1.05);
+}
+
+.send-btn:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+.send-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+
+@media (max-width: 1024px) {
+    .whatsapp-widget {
+        width: 350px;
+        height: 500px;
+    }
+}
+
+@media (max-width: 768px) {
+    .whatsapp-widget {
+        width: 100%;
+        height: 100%;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        top: 0;
+        border-radius: 0;
+    }
+
+    .whatsapp-widget.minimized {
+        height: auto;
+    }
+
+    .whatsapp-contacts {
+        width: 40%;
+    }
+
+    .whatsapp-chat {
+        width: 60%;
+    }
+
+    .message-bubble {
+        max-width: 90%;
+    }
+}
+
+@media (max-width: 480px) {
+    .whatsapp-widget {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+    }
+
+    .whatsapp-contacts {
+        width: 50%;
+    }
+
+    .whatsapp-chat {
+        width: 50%;
+    }
+
+    .message-bubble {
+        max-width: 95%;
+        font-size: 13px;
+        padding: 8px 10px;
+    }
+
+    .contact-name,
+    .message-input {
+        font-size: 13px;
+    }
+
+    .whatsapp-header h3 {
+        font-size: 14px;
+    }
+}
+
+/* ==================== DARK MODE (Optional) ==================== */
+
+@media (prefers-color-scheme: dark) {
+    .whatsapp-widget {
+        background: #1a1a1a;
+    }
+
+    .whatsapp-container,
+    .chat-input-area {
+        background: #1a1a1a;
+    }
+
+    .whatsapp-contacts {
+        background: #1a1a1a;
+        border-right-color: #333;
+    }
+
+    .contact-item {
+        border-bottom-color: #333;
+        color: #e0e0e0;
+    }
+
+    .contact-item:hover {
+        background: #2a2a2a;
+    }
+
+    .contact-item.active {
+        background: #2a3a2a;
+        border-left-color: #25D366;
+    }
+
+    .contact-item.unread {
+        background: #2a3a2a;
+    }
+
+    .contact-name {
+        color: #e0e0e0;
+    }
+
+    .contact-preview {
+        color: #999;
+    }
+
+    .contact-search {
+        background: #2a2a2a;
+        border-bottom-color: #333;
+        color: #e0e0e0;
+    }
+
+    .contact-search:focus {
+        background: #333;
+        border-bottom-color: #25D366;
+    }
+
+    .chat-header {
+        background: #2a2a2a;
+        border-bottom-color: #333;
+        color: #e0e0e0;
+    }
+
+    .header-info h3 {
+        color: #e0e0e0;
+    }
+
+    .message-bubble.received {
+        background: #333;
+        color: #e0e0e0;
+    }
+
+    .message-input {
+        background: #2a2a2a;
+        border-color: #333;
+        color: #e0e0e0;
+    }
+
+    .message-input:focus {
+        border-color: #25D366;
+    }
+
+    .chat-input-area {
+        border-top-color: #333;
+    }
+}
+
+/* ==================== ANIMATIONS ==================== */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(10px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.whatsapp-widget {
+    animation: slideIn 0.3s ease;
+}
+
+/* ==================== ACCESSIBILITY ==================== */
+
+.whatsapp-widget:focus-within {
+    box-shadow: 0 5px 40px rgba(37, 211, 102, 0.2);
+}
+
+button:focus {
+    outline: 2px solid #25D366;
+    outline-offset: 2px;
+}
+
+input:focus {
+    outline: 2px solid #25D366;
+    outline-offset: 2px;
+}
+
+/* ==================== PRINT STYLES ==================== */
+
+@media print {
+    .whatsapp-widget {
+        display: none;
+    }
+}

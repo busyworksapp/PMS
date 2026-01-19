@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barron Production Management</title>
+</head>
+<body>
+    <script>
+        // Redirect to login if not authenticated
+        const token = localStorage.getItem('auth_token');
+        if (token) {
+            window.location.href = '/app/frontend/dashboard.html';
+        } else {
+            window.location.href = '/app/frontend/login.html';
+        }
+    </script>
+</body>
+</html>

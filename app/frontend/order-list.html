@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders - Barron Production Management</title>
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: var(--font-size-2xl);
+            color: var(--text-dark);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .filters-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr auto;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-light);
+            border-radius: var(--border-radius);
+            border: 1px solid #e0e0e0;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            color: var(--text-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-sm);
+            font-family: inherit;
+        }
+
+        .filter-actions {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.5rem;
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .orders-table thead {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+        .orders-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: var(--font-size-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .orders-table td {
+            padding: 1rem;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .orders-table tbody tr:hover {
+            background: #f9f9f9;
+            cursor: pointer;
+        }
+
+        .order-number {
+            font-weight: 700;
+            color: var(--accent-orange);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-in-progress {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .status-completed {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            padding: 1rem;
+        }
+
+        .pagination button {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: var(--primary-dark);
+            color: white;
+            border-color: var(--primary-dark);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination .active {
+            background: var(--primary-dark);
+            color: white;
+            border-color: var(--primary-dark);
+        }
+
+        .spinner {
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #842029;
+            border: 1px solid #f5c2c7;
+        }
+
+        .alert-success {
+            background: #d1e7dd;
+            color: #0f5132;
+            border: 1px solid #badbcc;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        @media (max-width: 1024px) {
+            .filters-section {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .filter-actions {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header-actions {
+                justify-content: stretch;
+            }
+
+            .header-actions .btn {
+                flex: 1;
+                text-align: center;
+            }
+
+            .filters-section {
+                grid-template-columns: 1fr;
+            }
+
+            .orders-table {
+                font-size: var(--font-size-sm);
+            }
+
+            .orders-table th,
+            .orders-table td {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .orders-table tbody tr:nth-child(n+3) {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Navigation -->
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <h2 style="margin: 0; color: var(--accent-orange); font-weight: 700;">BARRON</h2>
+            </div>
+            <div class="navbar-menu">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="order-list.html" class="nav-link active">Orders</a>
+                <a href="defects.html" class="nav-link">Defects</a>
+                <a href="sop-tickets.html" class="nav-link">SOP Tickets</a>
+                <a href="maintenance.html" class="nav-link">Maintenance</a>
+            </div>
+            <div class="navbar-end">
+                <div class="user-menu">
+                    <div class="avatar" id="userAvatar" style="width: 40px; height: 40px; background: var(--accent-orange); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; cursor: pointer;">U</div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Orders</h1>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="openCreateOrderForm()">+ New Order</button>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+
+        <!-- Filters -->
+        <div class="filters-section">
+            <div class="filter-group">
+                <label>Order Number</label>
+                <input type="text" id="filterOrderNumber" placeholder="Search order #">
+            </div>
+            <div class="filter-group">
+                <label>Customer</label>
+                <input type="text" id="filterCustomer" placeholder="Search customer">
+            </div>
+            <div class="filter-group">
+                <label>Status</label>
+                <select id="filterStatus">
+                    <option value="">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Date Range</label>
+                <input type="date" id="filterDate" placeholder="Filter by date">
+            </div>
+            <div class="filter-actions">
+                <button class="btn btn-secondary" onclick="applyFilters()">Filter</button>
+                <button class="btn btn-outline" onclick="resetFilters()">Reset</button>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div id="loadingSpinner" class="spinner" style="display: none;">
+            <div class="spinner-border"></div>
+        </div>
+
+        <table class="orders-table" id="ordersTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Customer</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                    <th>Due Date</th>
+                    <th>Progress</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+            </tbody>
+        </table>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <h3>No Orders Found</h3>
+            <p>Try adjusting your filters or create a new order.</p>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination" style="display: none;">
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        let allOrders = [];
+        let filteredOrders = [];
+        let currentPage = 1;
+        const itemsPerPage = 20;
+
+        // Check authentication
+        if (!api.isAuthenticated()) {
+            window.location.href = 'login.html';
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserInfo();
+            loadOrders();
+            setupEventListeners();
+        });
+
+        function loadUserInfo() {
+            const user = JSON.parse(localStorage.getItem('user_info') || '{}');
+            const avatar = document.getElementById('userAvatar');
+            if (user.email) {
+                const initials = user.email.substring(0, 2).toUpperCase();
+                avatar.textContent = initials;
+            }
+            avatar.addEventListener('click', handleLogout);
+        }
+
+        function setupEventListeners() {
+            document.getElementById('filterOrderNumber').addEventListener('keyup', applyFilters);
+            document.getElementById('filterCustomer').addEventListener('keyup', applyFilters);
+            document.getElementById('filterStatus').addEventListener('change', applyFilters);
+            document.getElementById('filterDate').addEventListener('change', applyFilters);
+        }
+
+        async function loadOrders() {
+            const spinner = document.getElementById('loadingSpinner');
+            const table = document.getElementById('ordersTable');
+            spinner.style.display = 'flex';
+            table.style.display = 'none';
+
+            try {
+                const data = await api.getOrders();
+                allOrders = data || [];
+                filteredOrders = [...allOrders];
+                currentPage = 1;
+                displayOrders();
+            } catch (error) {
+                showAlert(`Error loading orders: ${error.message}`, 'error');
+                console.error('Error loading orders:', error);
+            } finally {
+                spinner.style.display = 'none';
+            }
+        }
+
+        function applyFilters() {
+            const orderNumber = document.getElementById('filterOrderNumber').value.toLowerCase();
+            const customer = document.getElementById('filterCustomer').value.toLowerCase();
+            const status = document.getElementById('filterStatus').value;
+            const date = document.getElementById('filterDate').value;
+
+            filteredOrders = allOrders.filter(order => {
+                let match = true;
+
+                if (orderNumber && !order.order_number.toLowerCase().includes(orderNumber)) {
+                    match = false;
+                }
+
+                if (customer && !order.customer_name.toLowerCase().includes(customer)) {
+                    match = false;
+                }
+
+                if (status && order.status !== status) {
+                    match = false;
+                }
+
+                if (date && !order.due_date.includes(date)) {
+                    match = false;
+                }
+
+                return match;
+            });
+
+            currentPage = 1;
+            displayOrders();
+        }
+
+        function resetFilters() {
+            document.getElementById('filterOrderNumber').value = '';
+            document.getElementById('filterCustomer').value = '';
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('filterDate').value = '';
+            filteredOrders = [...allOrders];
+            currentPage = 1;
+            displayOrders();
+        }
+
+        function displayOrders() {
+            const table = document.getElementById('ordersTable');
+            const tbody = document.getElementById('ordersTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const pagination = document.getElementById('pagination');
+
+            if (filteredOrders.length === 0) {
+                table.style.display = 'none';
+                pagination.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            table.style.display = 'table';
+            emptyState.style.display = 'none';
+
+            // Calculate pagination
+            const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+            const startIdx = (currentPage - 1) * itemsPerPage;
+            const endIdx = startIdx + itemsPerPage;
+            const pageOrders = filteredOrders.slice(startIdx, endIdx);
+
+            // Populate table
+            tbody.innerHTML = pageOrders.map(order => `
+                <tr onclick="viewOrder('${order.order_id}')">
+                    <td class="order-number">${order.order_number}</td>
+                    <td>${order.customer_name}</td>
+                    <td>${order.product_name}</td>
+                    <td>${order.quantity} units</td>
+                    <td><span class="status-badge status-${order.status}">${order.status.replace('-', ' ').toUpperCase()}</span></td>
+                    <td>${new Date(order.due_date).toLocaleDateString()}</td>
+                    <td>
+                        <div style="width: 100%; height: 20px; background: #f0f0f0; border-radius: 2px; overflow: hidden;">
+                            <div style="width: ${(order.completed_quantity / order.quantity) * 100}%; height: 100%; background: var(--accent-green);"></div>
+                        </div>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); viewOrder('${order.order_id}')">View</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Pagination
+            if (totalPages > 1) {
+                pagination.style.display = 'flex';
+                let paginationHtml = '';
+                
+                if (currentPage > 1) {
+                    paginationHtml += `<button onclick="currentPage--; displayOrders();">&laquo; Previous</button>`;
+                }
+
+                for (let i = 1; i <= totalPages; i++) {
+                    if (i === currentPage) {
+                        paginationHtml += `<button class="active">${i}</button>`;
+                    } else if (i <= 2 || i >= totalPages - 1 || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                        paginationHtml += `<button onclick="currentPage = ${i}; displayOrders();">${i}</button>`;
+                    } else if (i === currentPage - 2 || i === currentPage + 2) {
+                        paginationHtml += `<button disabled>...</button>`;
+                    }
+                }
+
+                if (currentPage < totalPages) {
+                    paginationHtml += `<button onclick="currentPage++; displayOrders();">Next &raquo;</button>`;
+                }
+
+                pagination.innerHTML = paginationHtml;
+            } else {
+                pagination.style.display = 'none';
+            }
+        }
+
+        function viewOrder(orderId) {
+            window.location.href = `order-detail.html?id=${orderId}`;
+        }
+
+        function openCreateOrderForm() {
+            window.location.href = 'order-create.html';
+        }
+
+        function showAlert(message, type = 'error') {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.appendChild(alert);
+            setTimeout(() => alert.remove(), 5000);
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to log out?')) {
+                localStorage.removeItem('auth_token');
+                localStorage.removeItem('user_info');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Auto-refresh orders every 30 seconds
+        setInterval(loadOrders, 30000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Master Data Administration - Barron Production Management</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body onload="requireAuth(); loadMasterData();">
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <span>⚙️</span> BARRON
+      </div>
+      <ul class="nav-links">
+        <li><a href="/dashboard.html">Dashboard</a></li>
+        <li><a href="/job-planning.html">Job Planning</a></li>
+        <li><a href="/defects.html">Defects</a></li>
+        <li><a href="/maintenance.html">Maintenance</a></li>
+        <li><a href="/master-data.html">Master Data</a></li>
+      </ul>
+      <div class="user-menu">
+        <button onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <h1>Master Data Configuration</h1>
+
+    <div class="alert alert-warning">
+      🔒 This section is restricted to System Administrators. All changes are logged for audit purposes.
+    </div>
+
+    <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+      <button class="btn-primary" onclick="switchTab('departments')">Departments</button>
+      <button class="btn-secondary" onclick="switchTab('products')">Products</button>
+      <button class="btn-secondary" onclick="switchTab('machines')">Machines</button>
+      <button class="btn-secondary" onclick="switchTab('users')">Users & Roles</button>
+      <button class="btn-secondary" onclick="switchTab('forms')">Dynamic Forms</button>
+    </div>
+
+    <!-- Departments Tab -->
+    <div id="tab-departments" class="tab-content">
+      <div class="flex-between mb-3">
+        <h2>Departments</h2>
+        <button class="btn-primary" onclick="showModal('new-dept-modal')">➕ New Department</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="departments-table">
+            <tr><td colspan="4" class="text-center text-muted">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Products Tab -->
+    <div id="tab-products" class="tab-content hidden">
+      <div class="flex-between mb-3">
+        <h2>Products & Items</h2>
+        <button class="btn-primary" onclick="showModal('new-product-modal')">➕ New Product</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="products-table">
+            <tr><td colspan="5" class="text-center text-muted">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Machines Tab -->
+    <div id="tab-machines" class="tab-content hidden">
+      <div class="flex-between mb-3">
+        <h2>Machinery</h2>
+        <button class="btn-primary" onclick="showModal('new-machine-modal')">➕ New Machine</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Machine Number</th>
+              <th>Department</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="machines-table">
+            <tr><td colspan="5" class="text-center text-muted">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Users Tab -->
+    <div id="tab-users" class="tab-content hidden">
+      <div class="flex-between mb-3">
+        <h2>Users & Roles</h2>
+        <button class="btn-primary" onclick="showModal('new-user-modal')">➕ New User</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Department</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-table">
+            <tr><td colspan="6" class="text-center text-muted">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Forms Tab -->
+    <div id="tab-forms" class="tab-content hidden">
+      <div class="flex-between mb-3">
+        <h2>Dynamic Form Configuration</h2>
+        <button class="btn-primary" onclick="showModal('new-form-modal')">➕ New Form</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Form Key</th>
+              <th>Form Name</th>
+              <th>Fields</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="forms-table">
+            <tr><td colspan="4" class="text-center text-muted">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Department Modal -->
+  <div id="new-dept-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Create Department</h2>
+        <button class="modal-close">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label for="dept-name" class="required">Department Name</label>
+        <input type="text" id="dept-name" placeholder="e.g., Branding Department 1" required>
+      </div>
+
+      <div class="form-group">
+        <label for="dept-desc">Description</label>
+        <textarea id="dept-desc" placeholder="Department description..."></textarea>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="hideModal('new-dept-modal')">Cancel</button>
+        <button class="btn-primary" onclick="saveDepartment()">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Product Modal -->
+  <div id="new-product-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Create Product</h2>
+        <button class="modal-close">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label for="product-code" class="required">Product Code</label>
+        <input type="text" id="product-code" placeholder="e.g., PROD-001" required>
+      </div>
+
+      <div class="form-group">
+        <label for="product-name" class="required">Product Name</label>
+        <input type="text" id="product-name" placeholder="Product name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="product-desc">Description</label>
+        <textarea id="product-desc" placeholder="Product description..."></textarea>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="hideModal('new-product-modal')">Cancel</button>
+        <button class="btn-primary" onclick="saveProduct()">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Machine Modal -->
+  <div id="new-machine-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Create Machine</h2>
+        <button class="modal-close">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label for="machine-name" class="required">Machine Name</label>
+        <input type="text" id="machine-name" placeholder="Machine name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="machine-number" class="required">Machine Number</label>
+        <input type="text" id="machine-number" placeholder="Unique machine number" required>
+      </div>
+
+      <div class="form-group">
+        <label for="machine-dept" class="required">Department</label>
+        <select id="machine-dept" required></select>
+      </div>
+
+      <div class="form-group">
+        <label for="machine-status">Status</label>
+        <select id="machine-status">
+          <option value="operational">Operational</option>
+          <option value="maintenance">Maintenance</option>
+          <option value="broken">Broken</option>
+        </select>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="hideModal('new-machine-modal')">Cancel</button>
+        <button class="btn-primary" onclick="saveMachine()">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New User Modal -->
+  <div id="new-user-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Create User</h2>
+        <button class="modal-close">✕</button>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="user-username" class="required">Username</label>
+          <input type="text" id="user-username" placeholder="username" required>
+        </div>
+
+        <div class="form-group">
+          <label for="user-email" class="required">Email</label>
+          <input type="email" id="user-email" placeholder="user@example.com" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="user-fullname" class="required">Full Name</label>
+          <input type="text" id="user-fullname" placeholder="Full name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="user-empnumber">Employee Number</label>
+          <input type="text" id="user-empnumber" placeholder="Employee ID" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="user-role" class="required">Role</label>
+          <select id="user-role" required>
+            <option value="">Select role</option>
+            <option value="admin">Admin</option>
+            <option value="planner">Planner</option>
+            <option value="operator">Operator</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="user-dept">Department</label>
+          <select id="user-dept"></select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="user-password" class="required">Password</label>
+        <input type="password" id="user-password" placeholder="Enter password" required>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="hideModal('new-user-modal')">Cancel</button>
+        <button class="btn-primary" onclick="saveUser()">Create User</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/main.js"></script>
+  <script>
+    let currentTab = 'departments';
+
+    function switchTab(tabName) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.add('hidden');
+      });
+
+      // Show selected tab
+      document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+      currentTab = tabName;
+
+      // Load data for tab
+      if (tabName === 'departments') loadDepartments();
+      if (tabName === 'products') loadProducts();
+      if (tabName === 'machines') loadMachines();
+      if (tabName === 'users') loadUsers();
+      if (tabName === 'forms') loadForms();
+    }
+
+    async function loadMasterData() {
+      loadDepartments();
+    }
+
+    async function loadDepartments() {
+      try {
+        const depts = await apiCall("GET", "/master/departments");
+        const tbody = document.getElementById("departments-table");
+        tbody.innerHTML = depts.map(d => `
+          <tr>
+            <td><strong>${d.name}</strong></td>
+            <td>${d.description || 'N/A'}</td>
+            <td><span class="badge badge-success">Active</span></td>
+            <td><button class="btn-small btn-secondary">Edit</button></td>
+          </tr>
+        `).join("");
+      } catch (error) {
+        console.error("Load error", error);
+      }
+    }
+
+    async function loadProducts() {
+      try {
+        const products = await apiCall("GET", "/master/products");
+        const tbody = document.getElementById("products-table");
+        tbody.innerHTML = products.map(p => `
+          <tr>
+            <td><strong>${p.code}</strong></td>
+            <td>${p.name}</td>
+            <td>${p.description || 'N/A'}</td>
+            <td><span class="badge badge-success">Active</span></td>
+            <td><button class="btn-small btn-secondary">Edit</button></td>
+          </tr>
+        `).join("");
+      } catch (error) {
+        console.error("Load error", error);
+      }
+    }
+
+    async function loadMachines() {
+      try {
+        const machines = await apiCall("GET", "/master/machines");
+        const tbody = document.getElementById("machines-table");
+        tbody.innerHTML = machines.map(m => `
+          <tr>
+            <td><strong>${m.name}</strong></td>
+            <td>${m.machine_number}</td>
+            <td>${m.department_id}</td>
+            <td><span class="badge badge-success">${m.status}</span></td>
+            <td><button class="btn-small btn-secondary">Edit</button></td>
+          </tr>
+        `).join("");
+
+        // Load dept options
+        const depts = await apiCall("GET", "/master/departments");
+        const select = document.getElementById("machine-dept");
+        select.innerHTML = depts.map(d => `<option value="${d.id}">${d.name}</option>`).join("");
+      } catch (error) {
+        console.error("Load error", error);
+      }
+    }
+
+    async function loadUsers() {
+      try {
+        // Placeholder - users endpoint would be needed
+        const tbody = document.getElementById("users-table");
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Users endpoint not yet implemented</td></tr>';
+      } catch (error) {
+        console.error("Load error", error);
+      }
+    }
+
+    async function loadForms() {
+      try {
+        // Placeholder - forms endpoint would be needed
+        const tbody = document.getElementById("forms-table");
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Forms endpoint not yet implemented</td></tr>';
+      } catch (error) {
+        console.error("Load error", error);
+      }
+    }
+
+    async function saveDepartment() {
+      const deptData = {
+        name: document.getElementById("dept-name").value,
+        description: document.getElementById("dept-desc").value,
+        is_active: true,
+      };
+
+      try {
+        await apiCall("POST", "/master/departments", deptData);
+        showAlert("Department created", "success");
+        hideModal("new-dept-modal");
+        loadDepartments();
+      } catch (error) {
+        showAlert("Error: " + error.message, "danger");
+      }
+    }
+
+    async function saveProduct() {
+      const productData = {
+        code: document.getElementById("product-code").value,
+        name: document.getElementById("product-name").value,
+        description: document.getElementById("product-desc").value,
+        is_active: true,
+      };
+
+      try {
+        await apiCall("POST", "/master/products", productData);
+        showAlert("Product created", "success");
+        hideModal("new-product-modal");
+        loadProducts();
+      } catch (error) {
+        showAlert("Error: " + error.message, "danger");
+      }
+    }
+
+    async function saveMachine() {
+      const machineData = {
+        name: document.getElementById("machine-name").value,
+        machine_number: document.getElementById("machine-number").value,
+        department_id: parseInt(document.getElementById("machine-dept").value),
+        status: document.getElementById("machine-status").value,
+        is_active: true,
+      };
+
+      try {
+        await apiCall("POST", "/master/machines", machineData);
+        showAlert("Machine created", "success");
+        hideModal("new-machine-modal");
+        loadMachines();
+      } catch (error) {
+        showAlert("Error: " + error.message, "danger");
+      }
+    }
+
+    async function saveUser() {
+      const userData = {
+        username: document.getElementById("user-username").value,
+        email: document.getElementById("user-email").value,
+        full_name: document.getElementById("user-fullname").value,
+        employee_number: document.getElementById("user-empnumber").value,
+        role: document.getElementById("user-role").value,
+        department_id: document.getElementById("user-dept").value ? parseInt(document.getElementById("user-dept").value) : null,
+        password: document.getElementById("user-password").value,
+        is_active: true,
+      };
+
+      try {
+        await apiCall("POST", "/auth/register", userData);
+        showAlert("User created", "success");
+        hideModal("new-user-modal");
+        loadUsers();
+      } catch (error) {
+        showAlert("Error: " + error.message, "danger");
+      }
+    }
+
+    // Load departments in user modal
+    document.addEventListener("click", function (event) {
+      if (event.target.textContent === "➕ New User") {
+        apiCall("GET", "/master/departments").then(depts => {
+          const select = document.getElementById("user-dept");
+          select.innerHTML = '<option value="">Optional</option>' +
+            depts.map(d => `<option value="${d.id}">${d.name}</option>`).join("");
+        });
+      }
+    });
+  </script>
+</body>
+</html>

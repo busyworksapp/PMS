@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Operator Job Board - Barron Production Management</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body onload="requireAuth(); loadOperatorJobs();">
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <span>⚙️</span> BARRON
+      </div>
+      <ul class="nav-links">
+        <li><a href="/operator-jobs.html">My Jobs</a></li>
+        <li><a href="/operator-dashboard.html">Dashboard</a></li>
+      </ul>
+      <div class="user-menu">
+        <button onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <h1>Job Board</h1>
+
+    <div class="alert alert-info">
+      📱 This is a mobile-friendly interface optimized for shop floor operators.
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <h3>Allocated Jobs</h3>
+        </div>
+        <div id="allocated-jobs">
+          <p class="text-muted text-center">Loading jobs...</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Quick Actions</h3>
+        </div>
+        <button class="btn-primary" style="width: 100%; margin-bottom: 1rem;" onclick="showModal('start-job-modal')">
+          ▶️ Start Job
+        </button>
+        <button class="btn-secondary" style="width: 100%; margin-bottom: 1rem;" onclick="showModal('add-unallocated-modal')">
+          ➕ Run Unallocated Job
+        </button>
+        <button class="btn-success" style="width: 100%;" onclick="showModal('end-job-modal')">
+          ⏹️ End Job
+        </button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 2rem;">
+      <div class="card-header">
+        <h3>Jobs in Progress</h3>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Order #</th>
+              <th>Customer</th>
+              <th>Status</th>
+              <th>Started At</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="in-progress-jobs">
+            <tr>
+              <td colspan="5" class="text-center text-muted">No jobs in progress</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Start Job Modal -->
+  <div id="start-job-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Start Job</h2>
+        <button class="modal-close">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label for="select-job" class="required">Select Job</label>
+        <select id="select-job" required></select>
+      </div>
+
+      <div class="form-group">
+        <label for="machine-name" class="required">Machine Name</label>
+        <input type="text" id="machine-name" placeholder="Enter machine name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="machine-number" class="required">Machine Number</label>
+        <input type="text" id="machine-number" placeholder="Enter machine number" required>
+      </div>
+
+      <div class="form-group">
+        <label for="production-stage" class="required">Production Stage</label>
+        <select id="production-stage" required></select>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="hideModal('start-job-modal')">Cancel</button>
+        <button class="btn-primary" onclick="startJob()">Start Job</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- End Job Modal -->
+  <div id="end-job-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>End Job</h2>
+        <button class="modal-close">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label for="end-job-select" class="required">Select Job</label>
+        <select id="end-job-select" required></select>
+      </div>
+
+      <div class="form-group">
+        <label for="quantity-completed" class="required">Quantity Completed</label>
+        <input type="number" id="quantity-completed" placeholder="0" required>
+      </div>
+
+      <div id="quantity-warning" class="alert alert-warning hidden">
+        ⚠️ Completed quantity differs from expected. Please review.
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="hideModal('end-job-modal')">Cancel</button>
+        <button class="btn-success" onclick="endJob()">End Job</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Unallocated Job Modal -->
+  <div id="add-unallocated-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Run Unallocated Job</h2>
+        <button class="modal-close">✕</button>
+      </div>
+
+      <div class="alert alert-info">
+        ℹ️ Enter the order number manually to run an unallocated job.
+      </div>
+
+      <div class="form-group">
+        <label for="unallocated-order-number" class="required">Order Number</label>
+        <input type="text" id="unallocated-order-number" placeholder="e.g., ORD-2024-001" required>
+      </div>
+
+      <div class="form-group">
+        <label for="unallocated-machine" class="required">Machine Name</label>
+        <input type="text" id="unallocated-machine" placeholder="Enter machine name" required>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="hideModal('add-unallocated-modal')">Cancel</button>
+        <button class="btn-primary" onclick="addUnallocatedJob()">Start Job</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/main.js"></script>
+  <script>
+    async function loadOperatorJobs() {
+      try {
+        // Load allocated jobs
+        const jobs = await apiCall("GET", "/orders?status=scheduled");
+        renderAllocatedJobs(jobs);
+      } catch (error) {
+        showAlert("Failed to load jobs", "danger");
+      }
+    }
+
+    function renderAllocatedJobs(jobs) {
+      const container = document.getElementById("allocated-jobs");
+      if (jobs.length === 0) {
+        container.innerHTML = '<p class="text-muted text-center">No allocated jobs</p>';
+        return;
+      }
+
+      container.innerHTML = jobs.map(job => `
+        <div style="padding: 1rem; border-bottom: 1px solid var(--color-border); cursor: pointer;" onclick="selectJob(${job.id})">
+          <h4 style="margin: 0 0 0.5rem 0;">${job.order_number}</h4>
+          <p style="margin: 0; color: var(--color-text-secondary); font-size: 14px;">${job.customer_name}</p>
+        </div>
+      `).join("");
+    }
+
+    function selectJob(jobId) {
+      document.getElementById("select-job").value = jobId;
+      showModal("start-job-modal");
+    }
+
+    async function startJob() {
+      const jobId = document.getElementById("select-job").value;
+      const machineName = document.getElementById("machine-name").value;
+      const machineNumber = document.getElementById("machine-number").value;
+      const stage = document.getElementById("production-stage").value;
+
+      if (!jobId || !machineName || !machineNumber || !stage) {
+        showAlert("Please fill all required fields", "warning");
+        return;
+      }
+
+      try {
+        // In production, this would call an endpoint to start the job
+        showAlert("Job started successfully", "success");
+        hideModal("start-job-modal");
+        loadOperatorJobs();
+      } catch (error) {
+        showAlert("Failed to start job: " + error.message, "danger");
+      }
+    }
+
+    async function endJob() {
+      const jobId = document.getElementById("end-job-select").value;
+      const quantityCompleted = document.getElementById("quantity-completed").value;
+
+      if (!jobId || !quantityCompleted) {
+        showAlert("Please fill all required fields", "warning");
+        return;
+      }
+
+      try {
+        // In production, this would call an endpoint to end the job
+        showAlert("Job ended successfully", "success");
+        hideModal("end-job-modal");
+        loadOperatorJobs();
+      } catch (error) {
+        showAlert("Failed to end job: " + error.message, "danger");
+      }
+    }
+
+    async function addUnallocatedJob() {
+      const orderNumber = document.getElementById("unallocated-order-number").value;
+      const machine = document.getElementById("unallocated-machine").value;
+
+      if (!orderNumber || !machine) {
+        showAlert("Please fill all required fields", "warning");
+        return;
+      }
+
+      try {
+        // In production, this would validate and start the job
+        showAlert("Unallocated job started successfully", "success");
+        hideModal("add-unallocated-modal");
+        loadOperatorJobs();
+      } catch (error) {
+        showAlert("Failed to start job: " + error.message, "danger");
+      }
+    }
+  </script>
+</body>
+</html>

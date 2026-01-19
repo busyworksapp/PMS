@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance & BOM Management - Barron Production Management</title>
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab-button {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+        }
+
+        .tab-button:hover {
+            color: var(--text-dark);
+        }
+
+        .tab-button.active {
+            color: var(--accent-orange);
+            border-bottom-color: var(--accent-orange);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--accent-orange);
+        }
+
+        .stat-label {
+            font-size: var(--font-size-xs);
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .bom-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .bom-table thead {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+        .bom-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: var(--font-size-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .bom-table td {
+            padding: 1rem;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .bom-table tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .product-name {
+            font-weight: 700;
+            color: var(--accent-orange);
+        }
+
+        .cost-value {
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        .filters-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f9f9f9;
+            border-radius: var(--border-radius);
+            border: 1px solid #e0e0e0;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-dark);
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-sm);
+        }
+
+        .form-section {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            max-width: 700px;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            color: var(--text-dark);
+        }
+
+        .form-group .required::after {
+            content: ' *';
+            color: var(--accent-red);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-sm);
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .component-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: white;
+            border-radius: var(--border-radius);
+        }
+
+        .component-table thead {
+            background: #f9f9f9;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .component-table th {
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: var(--font-size-sm);
+        }
+
+        .component-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .profitability-chart {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+        }
+
+        .profit-metric {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .profit-item {
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+
+        .profit-label {
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .profit-value {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        .profit-value.negative {
+            color: var(--accent-red);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .alert-success {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bom-table {
+                font-size: var(--font-size-sm);
+            }
+
+            .bom-table th,
+            .bom-table td {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .profit-metric {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Navigation -->
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <h2 style="margin: 0; color: var(--accent-orange); font-weight: 700;">BARRON</h2>
+            </div>
+            <div class="navbar-menu">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="order-list.html" class="nav-link">Orders</a>
+                <a href="defects.html" class="nav-link">Defects</a>
+                <a href="sop-tickets.html" class="nav-link">SOP Tickets</a>
+                <a href="finance.html" class="nav-link active">Finance</a>
+            </div>
+            <div class="navbar-end">
+                <div class="user-menu">
+                    <div class="avatar" id="userAvatar" style="width: 40px; height: 40px; background: var(--accent-orange); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; cursor: pointer;">U</div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 style="margin: 0;">Finance & BOM Management</h1>
+            <button class="btn btn-primary" onclick="switchTab('create')">+ Create BOM</button>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('bom')">BOM List</button>
+            <button class="tab-button" onclick="switchTab('create')">Create BOM</button>
+            <button class="tab-button" onclick="switchTab('profitability')">Profitability Analysis</button>
+        </div>
+
+        <!-- Tab 1: BOM List -->
+        <div id="bom" class="tab-content active">
+            <!-- Statistics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total BOMs</div>
+                    <div class="stat-value" id="totalBOMs">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Products</div>
+                    <div class="stat-value" id="totalProducts">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Avg. Material Cost</div>
+                    <div class="stat-value" id="avgCost">$0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Components</div>
+                    <div class="stat-value" id="totalComponents">0</div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters-section">
+                <div class="filter-group">
+                    <label>Product</label>
+                    <select id="filterProduct" onchange="applyBOMFilters()">
+                        <option value="">All Products</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Search</label>
+                    <input type="text" id="searchBOM" placeholder="Search BOM..." onkeyup="applyBOMFilters()">
+                </div>
+                <div class="filter-group">
+                    <label>Cost Range</label>
+                    <select id="filterCostRange" onchange="applyBOMFilters()">
+                        <option value="">All Ranges</option>
+                        <option value="low">Under $100</option>
+                        <option value="medium">$100 - $500</option>
+                        <option value="high">$500+</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- BOM Table -->
+            <div id="loadingSpinner" style="display: none; text-align: center; padding: 2rem;">
+                <div class="spinner-border"></div>
+            </div>
+
+            <table class="bom-table" id="bomTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>BOM ID</th>
+                        <th>Product</th>
+                        <th>Components</th>
+                        <th>Total Cost</th>
+                        <th>Unit Cost</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="bomTableBody">
+                </tbody>
+            </table>
+
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <h3>No BOMs Found</h3>
+                <p>Create a new BOM to manage product materials and costs.</p>
+            </div>
+        </div>
+
+        <!-- Tab 2: Create BOM -->
+        <div id="create" class="tab-content">
+            <div class="form-section">
+                <h2 style="margin-top: 0;">Create Bill of Materials</h2>
+                
+                <div class="form-group">
+                    <label class="required">Product Name</label>
+                    <select id="createProduct" required>
+                        <option value="">Select product...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="required">Description</label>
+                    <textarea id="createDescription" placeholder="BOM description and specifications..." required></textarea>
+                </div>
+
+                <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Components</h3>
+                <table class="component-table">
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Quantity</th>
+                            <th>Unit Cost</th>
+                            <th>Total Cost</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="componentsBody">
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">No components added yet</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <button class="btn btn-outline" onclick="addComponent()" style="margin-top: 1rem;">+ Add Component</button>
+
+                <div style="margin-top: 2rem; padding: 1rem; background: #f9f9f9; border-radius: var(--border-radius);">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <div style="font-size: var(--font-size-xs); font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem;">Total Material Cost</div>
+                            <div style="font-size: var(--font-size-xl); font-weight: 700; color: var(--accent-orange);" id="totalMaterialCost">$0.00</div>
+                        </div>
+                        <div>
+                            <div style="font-size: var(--font-size-xs); font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem;">Labor Cost</div>
+                            <input type="number" id="laborCost" placeholder="0.00" step="0.01" style="padding: 0.5rem; border: 1px solid #ddd; border-radius: var(--border-radius); width: 100%;">
+                        </div>
+                        <div>
+                            <div style="font-size: var(--font-size-xs); font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem;">Total Cost</div>
+                            <div style="font-size: var(--font-size-xl); font-weight: 700; color: var(--accent-green);" id="totalBOMCost">$0.00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions" style="margin-top: 2rem;">
+                    <button class="btn btn-secondary" onclick="switchTab('bom')">Cancel</button>
+                    <button class="btn btn-primary" onclick="submitCreateBOM()">Create BOM</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Profitability Analysis -->
+        <div id="profitability" class="tab-content">
+            <div class="profitability-chart">
+                <h2 style="margin-top: 0;">Product Profitability</h2>
+                
+                <table class="bom-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>BOM Cost</th>
+                            <th>Selling Price</th>
+                            <th>Gross Profit</th>
+                            <th>Margin %</th>
+                            <th>Units Sold</th>
+                            <th>Total Profit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="profitabilityBody">
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">Loading profitability data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="profitability-chart">
+                <h2>Summary Metrics</h2>
+                
+                <div class="profit-metric">
+                    <div class="profit-item">
+                        <div class="profit-label">Total Revenue</div>
+                        <div class="profit-value" id="totalRevenue">$0.00</div>
+                    </div>
+                    <div class="profit-item">
+                        <div class="profit-label">Total Material Cost</div>
+                        <div class="profit-value" id="totalMaterialCostMetric">$0.00</div>
+                    </div>
+                    <div class="profit-item">
+                        <div class="profit-label">Gross Profit</div>
+                        <div class="profit-value" id="totalGrossProfit">$0.00</div>
+                    </div>
+                </div>
+
+                <div class="profit-metric">
+                    <div class="profit-item">
+                        <div class="profit-label">Avg Margin %</div>
+                        <div class="profit-value" id="avgMargin">0%</div>
+                    </div>
+                    <div class="profit-item">
+                        <div class="profit-label">Most Profitable</div>
+                        <div class="profit-value" style="color: var(--accent-orange); font-size: var(--font-size-sm);" id="mostProfitable">-</div>
+                    </div>
+                    <div class="profit-item">
+                        <div class="profit-label">Least Profitable</div>
+                        <div class="profit-value" style="color: #ff6b35; font-size: var(--font-size-sm);" id="leastProfitable">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        let allBOMs = [];
+        let allProducts = [];
+        let components = [];
+        let filteredBOMs = [];
+
+        // Check authentication
+        if (!api.isAuthenticated()) {
+            window.location.href = 'login.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserInfo();
+            loadBOMs();
+            loadProducts();
+        });
+
+        function loadUserInfo() {
+            const user = JSON.parse(localStorage.getItem('user_info') || '{}');
+            const avatar = document.getElementById('userAvatar');
+            if (user.email) {
+                const initials = user.email.substring(0, 2).toUpperCase();
+                avatar.textContent = initials;
+            }
+            avatar.addEventListener('click', handleLogout);
+        }
+
+        async function loadBOMs() {
+            const spinner = document.getElementById('loadingSpinner');
+            spinner.style.display = 'block';
+
+            try {
+                const data = await api.get('/api/finance/boms');
+                allBOMs = data || [];
+                filteredBOMs = [...allBOMs];
+                displayBOMs();
+                updateBOMStats();
+            } catch (error) {
+                showAlert(`Error loading BOMs: ${error.message}`, 'error');
+                console.error('Error:', error);
+            } finally {
+                spinner.style.display = 'none';
+            }
+        }
+
+        async function loadProducts() {
+            try {
+                const data = await api.getProducts();
+                allProducts = data || [];
+                
+                const select = document.getElementById('createProduct');
+                const filterSelect = document.getElementById('filterProduct');
+                
+                select.innerHTML = '<option value="">Select product...</option>' + 
+                    allProducts.map(p => `<option value="${p.product_id}">${p.product_name}</option>`).join('');
+                
+                filterSelect.innerHTML = '<option value="">All Products</option>' + 
+                    allProducts.map(p => `<option value="${p.product_id}">${p.product_name}</option>`).join('');
+            } catch (error) {
+                console.error('Error loading products:', error);
+            }
+        }
+
+        function displayBOMs() {
+            const table = document.getElementById('bomTable');
+            const tbody = document.getElementById('bomTableBody');
+            const emptyState = document.getElementById('emptyState');
+
+            if (filteredBOMs.length === 0) {
+                table.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            table.style.display = 'table';
+            emptyState.style.display = 'none';
+
+            tbody.innerHTML = filteredBOMs.map(bom => `
+                <tr>
+                    <td><strong>${bom.bom_id}</strong></td>
+                    <td class="product-name">${bom.product_name}</td>
+                    <td>${bom.component_count || 0}</td>
+                    <td class="cost-value">$${(bom.total_cost || 0).toFixed(2)}</td>
+                    <td>$${(bom.unit_cost || 0).toFixed(2)}</td>
+                    <td><span class="badge" style="background: #d1e7dd; color: #0f5132; padding: 0.35rem 0.75rem; border-radius: 4px;">Active</span></td>
+                    <td><button class="btn btn-sm btn-outline" onclick="viewBOM('${bom.bom_id}')">View</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function updateBOMStats() {
+            const totalBOMs = allBOMs.length;
+            const totalProds = new Set(allBOMs.map(b => b.product_name)).size;
+            const avgCost = allBOMs.length > 0 ? allBOMs.reduce((sum, b) => sum + (b.total_cost || 0), 0) / allBOMs.length : 0;
+            const totalComps = allBOMs.reduce((sum, b) => sum + (b.component_count || 0), 0);
+
+            document.getElementById('totalBOMs').textContent = totalBOMs;
+            document.getElementById('totalProducts').textContent = totalProds;
+            document.getElementById('avgCost').textContent = '$' + avgCost.toFixed(2);
+            document.getElementById('totalComponents').textContent = totalComps;
+        }
+
+        function applyBOMFilters() {
+            const product = document.getElementById('filterProduct').value;
+            const search = document.getElementById('searchBOM').value.toLowerCase();
+            const costRange = document.getElementById('filterCostRange').value;
+
+            filteredBOMs = allBOMs.filter(bom => {
+                let match = true;
+                if (product && bom.product_id !== product) match = false;
+                if (search && !bom.bom_id.toLowerCase().includes(search) && !bom.product_name.toLowerCase().includes(search)) match = false;
+                if (costRange === 'low' && bom.total_cost >= 100) match = false;
+                if (costRange === 'medium' && (bom.total_cost < 100 || bom.total_cost >= 500)) match = false;
+                if (costRange === 'high' && bom.total_cost < 500) match = false;
+                return match;
+            });
+
+            displayBOMs();
+        }
+
+        function addComponent() {
+            const tbody = document.getElementById('componentsBody');
+            if (tbody.children.length === 1 && tbody.children[0].textContent.includes('No components')) {
+                tbody.innerHTML = '';
+            }
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><input type="text" placeholder="Component name" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd;"></td>
+                <td><input type="number" placeholder="0" min="1" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd;"></td>
+                <td><input type="number" placeholder="0.00" step="0.01" min="0" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd;"></td>
+                <td><span class="cost-value">$0.00</span></td>
+                <td><button class="btn btn-sm btn-danger" onclick="this.parentElement.parentElement.remove(); updateComponentCosts();">Remove</button></td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        function updateComponentCosts() {
+            const tbody = document.getElementById('componentsBody');
+            let totalCost = 0;
+
+            for (let i = 0; i < tbody.children.length; i++) {
+                const row = tbody.children[i];
+                const qty = parseFloat(row.children[1].querySelector('input').value) || 0;
+                const unitCost = parseFloat(row.children[2].querySelector('input').value) || 0;
+                const rowTotal = qty * unitCost;
+                row.children[3].textContent = '$' + rowTotal.toFixed(2);
+                totalCost += rowTotal;
+            }
+
+            document.getElementById('totalMaterialCost').textContent = '$' + totalCost.toFixed(2);
+            
+            const laborCost = parseFloat(document.getElementById('laborCost').value) || 0;
+            document.getElementById('totalBOMCost').textContent = '$' + (totalCost + laborCost).toFixed(2);
+        }
+
+        async function submitCreateBOM() {
+            const product = document.getElementById('createProduct').value;
+            const description = document.getElementById('createDescription').value;
+
+            if (!product || !description) {
+                showAlert('Please fill in all required fields', 'error');
+                return;
+            }
+
+            try {
+                await api.post('/api/finance/boms', {
+                    product_id: product,
+                    description: description,
+                    components: components,
+                    labor_cost: parseFloat(document.getElementById('laborCost').value) || 0
+                });
+
+                showAlert('BOM created successfully', 'success');
+                switchTab('bom');
+                loadBOMs();
+            } catch (error) {
+                showAlert(`Error creating BOM: ${error.message}`, 'error');
+            }
+        }
+
+        function viewBOM(bomId) {
+            const bom = allBOMs.find(b => b.bom_id === bomId);
+            if (!bom) return;
+
+            alert(`BOM: ${bom.bom_id}\nProduct: ${bom.product_name}\nCost: $${bom.total_cost}`);
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function showAlert(message, type = 'error') {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.appendChild(alert);
+            setTimeout(() => alert.remove(), 5000);
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to log out?')) {
+                localStorage.removeItem('auth_token');
+                localStorage.removeItem('user_info');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadBOMs, 30000);
+    </script>
+</body>
+</html>

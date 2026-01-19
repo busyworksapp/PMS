@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOP & NCR Management - Barron Manufacturing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        header {
+            background: #0d0d0d;
+            color: white;
+            padding: 16px 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ff6b35;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: #ff6b35;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: #ff5722;
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 12px 16px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            color: #999;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            margin-bottom: -2px;
+        }
+
+        .tab.active {
+            color: #ff6b35;
+            border-bottom-color: #ff6b35;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            color: #666;
+        }
+
+        select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #ff6b35;
+        }
+
+        .btn-primary {
+            padding: 8px 16px;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #ff5722;
+        }
+
+        /* Ticket Cards */
+        .tickets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .ticket-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #ff6b35;
+            transition: all 0.2s;
+        }
+
+        .ticket-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .ticket-id {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-open {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-escalated {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-in-investigation {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .status-closed {
+            background: #d1e7dd;
+            color: #0a3622;
+        }
+
+        .ticket-meta {
+            font-size: 13px;
+            color: #666;
+            margin: 8px 0;
+        }
+
+        .ticket-description {
+            font-size: 14px;
+            color: #555;
+            margin: 12px 0;
+            line-height: 1.5;
+        }
+
+        .workflow-status {
+            background: #f9f9f9;
+            padding: 12px;
+            border-radius: 4px;
+            margin: 12px 0;
+            font-size: 13px;
+        }
+
+        .workflow-step {
+            display: flex;
+            align-items: center;
+            margin: 6px 0;
+        }
+
+        .step-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            margin-right: 8px;
+        }
+
+        .step-indicator.active {
+            background: #ff6b35;
+            color: white;
+        }
+
+        .step-indicator.completed {
+            background: #66bb6a;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 13px;
+            color: #555;
+        }
+
+        .ticket-footer {
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            flex: 1;
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-small:hover {
+            border-color: #ff6b35;
+            color: #ff6b35;
+        }
+
+        .btn-small.primary {
+            background: #ff6b35;
+            color: white;
+            border-color: #ff6b35;
+        }
+
+        .btn-small.primary:hover {
+            background: #ff5722;
+        }
+
+        .btn-small.danger {
+            background: #f8d7da;
+            color: #721c24;
+            border-color: #f5c2c7;
+        }
+
+        .btn-small.danger:hover {
+            background: #f5c2c7;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f0f0f0;
+            border-top-color: #0d0d0d;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Workflow Info */
+        .workflow-info {
+            background: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .workflow-title {
+            font-weight: 600;
+            color: #0d47a1;
+            margin-bottom: 8px;
+        }
+
+        .workflow-text {
+            font-size: 13px;
+            color: #1565c0;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .tickets-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">BARRON</div>
+            <div class="nav-right">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <span id="userName">User</span>
+                <button class="btn-logout" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">SOP & NCR Management</h1>
+            <p class="page-subtitle">Manage SOP failures and non-conformance reports</p>
+        </div>
+
+        <!-- Workflow Info -->
+        <div class="workflow-info">
+            <div class="workflow-title">📋 SOP Failure Workflow</div>
+            <div class="workflow-text">
+                <strong>Process:</strong> Ticket created → Charged department responds → If rejected, escalated to HOD → 
+                HOD decides (Accept for investigation or Reject) → Submit NCR if accepted → Ticket closes
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('all')">All Tickets</button>
+            <button class="tab" onclick="switchTab('open')">Open/Pending</button>
+            <button class="tab" onclick="switchTab('escalated')">Escalated</button>
+            <button class="tab" onclick="switchTab('breached')">SLA Breached</button>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label class="filter-label">Status:</label>
+                <select id="filterStatus" onchange="applyFilters()">
+                    <option value="">All Status</option>
+                    <option value="open">Open</option>
+                    <option value="escalated">Escalated</option>
+                    <option value="in_investigation">In Investigation</option>
+                    <option value="closed">Closed</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Department:</label>
+                <select id="filterDept" onchange="applyFilters()">
+                    <option value="">All Departments</option>
+                </select>
+            </div>
+
+            <button class="btn-primary" onclick="newTicket()">+ New SOP Ticket</button>
+        </div>
+
+        <!-- Tickets Section -->
+        <div id="ticketsContainer" class="loading">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        if (!api.isAuthenticated()) {
+            window.location.href = 'login.html';
+        }
+
+        let currentTab = 'all';
+        let allTickets = [];
+        let departments = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const userInitial = (api.role || 'U')[0].toUpperCase();
+            document.getElementById('userAvatar').textContent = userInitial;
+            document.getElementById('userName').textContent = api.role || 'User';
+            
+            loadDepartments();
+            loadTickets();
+        });
+
+        async function loadDepartments() {
+            try {
+                const response = await api.getDepartments();
+                departments = response.data || [];
+                
+                const select = document.getElementById('filterDept');
+                departments.forEach(dept => {
+                    const option = document.createElement('option');
+                    option.value = dept.id;
+                    option.textContent = dept.name;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Failed to load departments:', error);
+            }
+        }
+
+        async function loadTickets() {
+            try {
+                const response = await api.getSOPTickets();
+                allTickets = response.data || [];
+                renderTickets();
+            } catch (error) {
+                console.error('Failed to load tickets:', error);
+                document.getElementById('ticketsContainer').innerHTML = 
+                    '<div class="empty-state">Failed to load tickets</div>';
+            }
+        }
+
+        function renderTickets() {
+            let filteredTickets = allTickets;
+
+            // Apply tab filter
+            if (currentTab === 'open') {
+                filteredTickets = allTickets.filter(t => t.status === 'open');
+            } else if (currentTab === 'escalated') {
+                filteredTickets = allTickets.filter(t => t.status === 'escalated');
+            } else if (currentTab === 'breached') {
+                filteredTickets = allTickets.filter(t => t.sla_breached);
+            }
+
+            // Apply status filter
+            const status = document.getElementById('filterStatus').value;
+            if (status) {
+                filteredTickets = filteredTickets.filter(t => t.status === status);
+            }
+
+            // Apply dept filter
+            const dept = document.getElementById('filterDept').value;
+            if (dept) {
+                filteredTickets = filteredTickets.filter(t => t.charged_department_id == dept);
+            }
+
+            if (filteredTickets.length === 0) {
+                document.getElementById('ticketsContainer').innerHTML = 
+                    '<div class="empty-state">No SOP tickets found</div>';
+                return;
+            }
+
+            // Sort by SLA breach status and date
+            filteredTickets.sort((a, b) => {
+                if (a.sla_breached !== b.sla_breached) {
+                    return a.sla_breached ? -1 : 1;
+                }
+                return new Date(b.created_at) - new Date(a.created_at);
+            });
+
+            let html = '<div class="tickets-grid">';
+            
+            filteredTickets.forEach(ticket => {
+                const chargedDept = departments.find(d => d.id == ticket.charged_department_id);
+                const deptName = chargedDept?.name || 'Unknown';
+
+                // Determine workflow progress
+                const steps = [
+                    { label: 'Open', status: ['open', 'escalated', 'in_investigation', 'closed'].includes(ticket.status) ? 'completed' : 'pending' },
+                    { label: 'Charged Dept', status: ['escalated', 'in_investigation', 'closed'].includes(ticket.status) ? 'completed' : (ticket.status === 'open' ? 'active' : 'pending') },
+                    { label: 'HOD Decision', status: ['in_investigation', 'closed'].includes(ticket.status) ? 'active' : 'pending' },
+                    { label: 'NCR/Closed', status: ticket.status === 'closed' ? 'completed' : 'pending' }
+                ];
+
+                let workflowHtml = steps.map((step, idx) => `
+                    <div class="workflow-step">
+                        <div class="step-indicator ${step.status}">
+                            ${step.status === 'completed' ? '✓' : idx + 1}
+                        </div>
+                        <div class="step-label">${step.label}</div>
+                    </div>
+                `).join('');
+
+                const breachWarning = ticket.sla_breached 
+                    ? `<div style="color: #c62828; font-weight: 600; margin-top: 8px;">🚨 SLA BREACHED</div>`
+                    : '';
+
+                html += `
+                    <div class="ticket-card">
+                        <div class="ticket-header">
+                            <div class="ticket-id">Ticket #${ticket.id}</div>
+                            <span class="status-badge status-${ticket.status}">${ticket.status}</span>
+                        </div>
+                        <div class="ticket-meta">
+                            Department: <strong>${deptName}</strong>
+                        </div>
+                        <div class="ticket-meta">
+                            Created: ${new Date(ticket.created_at).toLocaleDateString()}
+                        </div>
+                        <div class="ticket-description">
+                            ${ticket.failure_description || 'No description'}
+                        </div>
+                        ${breachWarning}
+                        <div class="workflow-status">
+                            <strong style="font-size: 12px; display: block; margin-bottom: 8px;">Workflow Progress</strong>
+                            ${workflowHtml}
+                        </div>
+                        <div class="ticket-footer">
+                            <button class="btn-small" onclick="viewTicket(${ticket.id})">View</button>
+                            ${ticket.status === 'open' ? `<button class="btn-small primary" onclick="respondTicket(${ticket.id})">Respond</button>` : ''}
+                            ${ticket.status === 'open' ? `<button class="btn-small danger" onclick="rejectTicket(${ticket.id})">Reject</button>` : ''}
+                            ${ticket.status === 'in_investigation' ? `<button class="btn-small primary" onclick="submitNCR(${ticket.id})">Submit NCR</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            document.getElementById('ticketsContainer').innerHTML = html;
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            renderTickets();
+        }
+
+        function applyFilters() {
+            renderTickets();
+        }
+
+        function newTicket() {
+            alert('Create new SOP ticket feature coming soon');
+        }
+
+        function viewTicket(ticketId) {
+            window.location.href = `sop-detail.html?id=${ticketId}`;
+        }
+
+        function respondTicket(ticketId) {
+            alert('Respond to SOP ticket feature coming soon');
+        }
+
+        function rejectTicket(ticketId) {
+            if (confirm('Reject this SOP ticket? This will escalate to HOD.')) {
+                alert('Rejection submitted - escalating to HOD');
+            }
+        }
+
+        function submitNCR(ticketId) {
+            alert('Submit NCR interface coming soon');
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                api.logout();
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>

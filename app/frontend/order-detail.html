@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details - Barron Production Management</title>
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+
+        .breadcrumb {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            align-items: center;
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+        }
+
+        .breadcrumb a {
+            color: var(--accent-orange);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .order-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--accent-orange);
+        }
+
+        .info-label {
+            font-size: var(--font-size-xs);
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .order-timeline {
+            position: relative;
+            padding: 1rem 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            background: var(--accent-orange);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px var(--accent-orange);
+        }
+
+        .timeline-item:last-child::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 1rem;
+            width: 2px;
+            height: calc(100% + 1.5rem);
+            background: #e0e0e0;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-status {
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-date {
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+        }
+
+        .production-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .production-table thead {
+            background: #f9f9f9;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .production-table th {
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: var(--font-size-sm);
+            color: var(--text-dark);
+        }
+
+        .production-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .status-timeline {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            align-items: center;
+        }
+
+        .status-step {
+            flex: 1;
+            text-align: center;
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: var(--border-radius);
+            position: relative;
+        }
+
+        .status-step.active {
+            background: var(--accent-orange);
+            color: white;
+        }
+
+        .status-step.completed {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .status-step-label {
+            font-weight: 700;
+            font-size: var(--font-size-sm);
+            margin-bottom: 0.5rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .modal-header {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .spinner {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .order-info-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .order-info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section {
+                padding: 1rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Navigation -->
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <h2 style="margin: 0; color: var(--accent-orange); font-weight: 700;">BARRON</h2>
+            </div>
+            <div class="navbar-menu">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="order-list.html" class="nav-link active">Orders</a>
+                <a href="defects.html" class="nav-link">Defects</a>
+                <a href="sop-tickets.html" class="nav-link">SOP Tickets</a>
+                <a href="maintenance.html" class="nav-link">Maintenance</a>
+            </div>
+            <div class="navbar-end">
+                <div class="user-menu">
+                    <div class="avatar" id="userAvatar" style="width: 40px; height: 40px; background: var(--accent-orange); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; cursor: pointer;">U</div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a onclick="window.location.href='order-list.html'">Orders</a>
+            <span>/</span>
+            <span id="orderBreadcrumb">Loading...</span>
+        </div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1 id="orderTitle" style="margin: 0 0 0.5rem 0;">Loading...</h1>
+                <div id="orderStatus" style="font-size: var(--font-size-sm); color: var(--text-muted);">Loading order details...</div>
+            </div>
+            <div>
+                <button class="btn btn-secondary" onclick="window.location.href='order-list.html'">Back to Orders</button>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+
+        <!-- Order Info Cards -->
+        <div id="loadingSpinner" class="spinner">
+            <div class="spinner-border"></div>
+        </div>
+
+        <div id="orderContent" style="display: none;">
+            <div class="order-info-grid">
+                <div class="info-card">
+                    <div class="info-label">Customer</div>
+                    <div class="info-value" id="customerName">-</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Product</div>
+                    <div class="info-value" id="productName">-</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Order Qty</div>
+                    <div class="info-value" id="orderQty">-</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Due Date</div>
+                    <div class="info-value" id="dueDate">-</div>
+                </div>
+            </div>
+
+            <!-- Production Status -->
+            <div class="section">
+                <div class="section-title">Production Timeline</div>
+                <div class="status-timeline" id="statusTimeline">
+                    <!-- Status steps will be inserted here -->
+                </div>
+                <div style="margin-top: 1.5rem; padding: 1rem; background: #f9f9f9; border-radius: var(--border-radius);">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <div class="info-label">Completed</div>
+                            <div style="font-size: var(--font-size-lg); font-weight: 700; color: var(--accent-green);">
+                                <span id="completedQty">0</span> / <span id="totalQty">0</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="info-label">Progress</div>
+                            <div style="margin-top: 0.5rem;">
+                                <div style="width: 100%; height: 20px; background: #f0f0f0; border-radius: 2px; overflow: hidden;">
+                                    <div id="progressBar" style="height: 100%; background: var(--accent-green); width: 0%; transition: width 0.3s;"></div>
+                                </div>
+                                <div style="margin-top: 0.5rem; font-weight: 600; text-align: right;" id="progressPercent">0%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Production Schedule -->
+            <div class="section">
+                <div class="section-title">Machine Assignments</div>
+                <table class="production-table">
+                    <thead>
+                        <tr>
+                            <th>Machine</th>
+                            <th>Assigned Qty</th>
+                            <th>Status</th>
+                            <th>Completed Qty</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleTableBody">
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">No machines assigned</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="openScheduleModal()">+ Assign to Machine</button>
+                </div>
+            </div>
+
+            <!-- Order Activity Timeline -->
+            <div class="section">
+                <div class="section-title">Activity Timeline</div>
+                <div class="order-timeline" id="activityTimeline">
+                    <!-- Timeline items will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="editOrder()">Edit Order</button>
+                <button class="btn btn-danger" onclick="cancelOrder()">Cancel Order</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Modal -->
+    <div id="scheduleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Assign to Machine</div>
+            <div class="modal-body">
+                <div class="filter-group" style="margin-bottom: 1rem;">
+                    <label style="font-weight: 600; margin-bottom: 0.5rem;">Select Machine</label>
+                    <select id="machineSelect" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: var(--border-radius);">
+                        <option value="">Loading machines...</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label style="font-weight: 600; margin-bottom: 0.5rem;">Quantity to Assign</label>
+                    <input type="number" id="scheduleQty" placeholder="0" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: var(--border-radius);">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeScheduleModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="submitSchedule()">Assign</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        let orderDetail = null;
+        const orderId = new URLSearchParams(window.location.search).get('id');
+
+        // Check authentication
+        if (!api.isAuthenticated()) {
+            window.location.href = 'login.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserInfo();
+            if (orderId) {
+                loadOrderDetail();
+                loadMachines();
+            } else {
+                showAlert('Invalid order ID', 'error');
+            }
+        });
+
+        function loadUserInfo() {
+            const user = JSON.parse(localStorage.getItem('user_info') || '{}');
+            const avatar = document.getElementById('userAvatar');
+            if (user.email) {
+                const initials = user.email.substring(0, 2).toUpperCase();
+                avatar.textContent = initials;
+            }
+            avatar.addEventListener('click', handleLogout);
+        }
+
+        async function loadOrderDetail() {
+            try {
+                const data = await api.getOrderDetail(orderId);
+                orderDetail = data;
+                displayOrderDetail();
+            } catch (error) {
+                showAlert(`Error loading order: ${error.message}`, 'error');
+                console.error('Error loading order:', error);
+            }
+        }
+
+        function displayOrderDetail() {
+            const content = document.getElementById('orderContent');
+            const spinner = document.getElementById('loadingSpinner');
+            
+            spinner.style.display = 'none';
+            content.style.display = 'block';
+
+            // Update header
+            document.getElementById('orderTitle').textContent = `Order ${orderDetail.order_number}`;
+            document.getElementById('orderBreadcrumb').textContent = orderDetail.order_number;
+            document.getElementById('orderStatus').textContent = `Status: ${orderDetail.status.toUpperCase()} | Created: ${new Date(orderDetail.created_at).toLocaleDateString()}`;
+
+            // Update info cards
+            document.getElementById('customerName').textContent = orderDetail.customer_name;
+            document.getElementById('productName').textContent = orderDetail.product_name;
+            document.getElementById('orderQty').textContent = `${orderDetail.quantity} units`;
+            document.getElementById('dueDate').textContent = new Date(orderDetail.due_date).toLocaleDateString();
+
+            // Update progress
+            const completed = orderDetail.completed_quantity || 0;
+            const total = orderDetail.quantity;
+            const progress = total > 0 ? (completed / total) * 100 : 0;
+            
+            document.getElementById('completedQty').textContent = completed;
+            document.getElementById('totalQty').textContent = total;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressPercent').textContent = Math.round(progress) + '%';
+
+            // Status timeline
+            const statuses = ['pending', 'in-progress', 'quality-check', 'completed'];
+            const statusTimeline = document.getElementById('statusTimeline');
+            statusTimeline.innerHTML = statuses.map(status => {
+                const isActive = status === orderDetail.status;
+                const isCompleted = statuses.indexOf(status) < statuses.indexOf(orderDetail.status) || (status === 'completed' && orderDetail.status === 'completed');
+                const className = isActive ? 'active' : isCompleted ? 'completed' : '';
+                return `<div class="status-step ${className}"><div class="status-step-label">${status.replace('-', ' ').toUpperCase()}</div></div>`;
+            }).join('');
+
+            // Schedule table
+            const scheduleBody = document.getElementById('scheduleTableBody');
+            if (orderDetail.schedule && orderDetail.schedule.length > 0) {
+                scheduleBody.innerHTML = orderDetail.schedule.map(item => `
+                    <tr>
+                        <td>${item.machine_name}</td>
+                        <td>${item.assigned_quantity} units</td>
+                        <td><span class="status-badge status-${item.status || 'pending'}">${(item.status || 'pending').toUpperCase()}</span></td>
+                        <td>${item.completed_quantity || 0} units</td>
+                        <td><button class="btn btn-sm btn-outline" onclick="editSchedule('${item.schedule_id}')">Edit</button></td>
+                    </tr>
+                `).join('');
+            }
+
+            // Activity timeline
+            const timeline = document.getElementById('activityTimeline');
+            const activities = orderDetail.activities || [];
+            timeline.innerHTML = activities.map(activity => `
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-status">${activity.activity_type}</div>
+                        <div class="timeline-date">${new Date(activity.created_at).toLocaleString()}</div>
+                        ${activity.notes ? `<div style="margin-top: 0.5rem; color: var(--text-dark);">${activity.notes}</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function loadMachines() {
+            try {
+                const data = await api.getMachines();
+                const select = document.getElementById('machineSelect');
+                select.innerHTML = '<option value="">Select a machine...</option>' + 
+                    data.map(m => `<option value="${m.machine_id}">${m.machine_name} (${m.capacity || 'N/A'} units/hour)</option>`).join('');
+            } catch (error) {
+                console.error('Error loading machines:', error);
+            }
+        }
+
+        function openScheduleModal() {
+            document.getElementById('scheduleModal').style.display = 'block';
+            document.getElementById('machineSelect').value = '';
+            document.getElementById('scheduleQty').value = '';
+        }
+
+        function closeScheduleModal() {
+            document.getElementById('scheduleModal').style.display = 'none';
+        }
+
+        async function submitSchedule() {
+            const machineId = document.getElementById('machineSelect').value;
+            const qty = parseInt(document.getElementById('scheduleQty').value);
+
+            if (!machineId || !qty) {
+                showAlert('Please select a machine and enter quantity', 'error');
+                return;
+            }
+
+            try {
+                await api.scheduleOrder(orderId, machineId, qty);
+                showAlert('Order assigned to machine successfully', 'success');
+                closeScheduleModal();
+                loadOrderDetail();
+            } catch (error) {
+                showAlert(`Error assigning order: ${error.message}`, 'error');
+            }
+        }
+
+        function editSchedule(scheduleId) {
+            showAlert('Edit schedule feature coming soon', 'info');
+        }
+
+        function editOrder() {
+            showAlert('Edit order feature coming soon', 'info');
+        }
+
+        function cancelOrder() {
+            if (confirm('Are you sure you want to cancel this order?')) {
+                showAlert('Cancel order feature coming soon', 'info');
+            }
+        }
+
+        function showAlert(message, type = 'error') {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.appendChild(alert);
+            setTimeout(() => alert.remove(), 5000);
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to log out?')) {
+                localStorage.removeItem('auth_token');
+                localStorage.removeItem('user_info');
+                window.location.href = 'login.html';
+            }
+        }
+
+        window.onclick = (event) => {
+            const modal = document.getElementById('scheduleModal');
+            if (event.target === modal) {
+                closeScheduleModal();
+            }
+        };
+    </script>
+</body>
+</html>

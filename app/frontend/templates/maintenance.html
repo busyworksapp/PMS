@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maintenance Management - Barron Production Management</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body onload="requireAuth(); loadMaintenance();">
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <span>⚙️</span> BARRON
+      </div>
+      <ul class="nav-links">
+        <li><a href="/dashboard.html">Dashboard</a></li>
+        <li><a href="/job-planning.html">Job Planning</a></li>
+        <li><a href="/defects.html">Defects</a></li>
+        <li><a href="/maintenance.html">Maintenance</a></li>
+        <li><a href="/master-data.html">Master Data</a></li>
+      </ul>
+      <div class="user-menu">
+        <button onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="flex-between mb-3">
+      <h1>Equipment Maintenance Management</h1>
+      <button class="btn-primary" onclick="showModal('new-ticket-modal')">
+        🔧 New Maintenance Request
+      </button>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <div style="text-align: center;">
+          <div style="font-size: 28px; margin-bottom: 10px;">🔴</div>
+          <h3>Open Tickets</h3>
+          <div style="font-size: 24px; color: var(--color-danger); font-weight: bold;" id="open-count">0</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="text-align: center;">
+          <div style="font-size: 28px; margin-bottom: 10px;">⏳</div>
+          <h3>In Progress</h3>
+          <div style="font-size: 24px; color: var(--color-warning); font-weight: bold;" id="progress-count">0</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="text-align: center;">
+          <div style="font-size: 28px; margin-bottom: 10px;">✅</div>
+          <h3>Completed</h3>
+          <div style="font-size: 24px; color: var(--color-success); font-weight: bold;" id="completed-count">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 2rem;">
+      <div class="card-header">
+        <h3>Maintenance Tickets</h3>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Ticket #</th>
+              <th>Machine</th>
+              <th>Department</th>
+              <th>Issue</th>
+              <th>Severity</th>
+              <th>Status</th>
+              <th>Assigned To</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tickets-table">
+            <tr>
+              <td colspan="8" class="text-center text-muted">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Maintenance Request Modal -->
+  <div id="new-ticket-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Create Maintenance Request</h2>
+        <button class="modal-close">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label for="machine-id" class="required">Machine</label>
+        <select id="machine-id" required></select>
+      </div>
+
+      <div class="form-group">
+        <label for="issue-description" class="required">Issue Description</label>
+        <textarea id="issue-description" placeholder="Describe the problem..." required></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="severity" class="required">Severity</label>
+          <select id="severity" required>
+            <option value="">Select severity</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="critical">Critical</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="fault-date">Date/Time of Fault</label>
+          <input type="datetime-local" id="fault-date">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="notes">Additional Notes</label>
+        <textarea id="notes" placeholder="Optional notes..."></textarea>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="hideModal('new-ticket-modal')">Cancel</button>
+        <button class="btn-primary" onclick="saveTicket()">Submit Request</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/main.js"></script>
+  <script>
+    async function loadMaintenance() {
+      try {
+        // Load tickets
+        const tickets = await apiCall("GET", "/maintenance/tickets");
+        renderTickets(tickets || []);
+
+        // Count statuses
+        const open = (tickets || []).filter(t => t.status === 'open').length;
+        const inProgress = (tickets || []).filter(t => t.status === 'in_progress').length;
+        const completed = (tickets || []).filter(t => t.status === 'completed').length;
+
+        document.getElementById("open-count").textContent = open;
+        document.getElementById("progress-count").textContent = inProgress;
+        document.getElementById("completed-count").textContent = completed;
+
+        // Load machines for dropdown
+        loadMachines();
+      } catch (error) {
+        console.error("Failed to load maintenance", error);
+      }
+    }
+
+    function renderTickets(tickets) {
+      const tableBody = document.getElementById("tickets-table");
+      if (tickets.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No maintenance tickets</td></tr>';
+        return;
+      }
+
+      tableBody.innerHTML = tickets.map(ticket => `
+        <tr>
+          <td><strong>${ticket.ticket_number || 'N/A'}</strong></td>
+          <td>${ticket.machine_id || 'N/A'}</td>
+          <td>${ticket.department_id || 'N/A'}</td>
+          <td>${ticket.issue_description.substring(0, 30)}...</td>
+          <td><span class="badge badge-danger">${ticket.severity || 'N/A'}</span></td>
+          <td><span class="badge badge-info">${ticket.status || 'open'}</span></td>
+          <td>${ticket.assigned_to_id ? 'Assigned' : 'Unassigned'}</td>
+          <td>
+            <button class="btn-small btn-secondary">Edit</button>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    async function loadMachines() {
+      try {
+        const machines = await apiCall("GET", "/master/machines");
+        const select = document.getElementById("machine-id");
+        select.innerHTML = machines.map(m => 
+          `<option value="${m.id}">${m.name} (${m.machine_number})</option>`
+        ).join("");
+      } catch (error) {
+        console.error("Failed to load machines", error);
+      }
+    }
+
+    async function saveTicket() {
+      const ticketData = {
+        machine_id: parseInt(document.getElementById("machine-id").value),
+        issue_description: document.getElementById("issue-description").value,
+        severity: document.getElementById("severity").value,
+      };
+
+      try {
+        // In production, POST to /maintenance/tickets endpoint
+        showAlert("Maintenance request created", "success");
+        hideModal("new-ticket-modal");
+        loadMaintenance();
+      } catch (error) {
+        showAlert("Failed to create request: " + error.message, "danger");
+      }
+    }
+  </script>
+</body>
+</html>

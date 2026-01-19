@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operator Portal - Barron Production Management</title>
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+
+        .welcome-card {
+            background: linear-gradient(135deg, var(--accent-orange) 0%, #ff8c5a 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .welcome-card h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: var(--font-size-2xl);
+        }
+
+        .welcome-card p {
+            margin: 0;
+            opacity: 0.95;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--accent-orange);
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: var(--font-size-xs);
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .job-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .job-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            border-top: 4px solid var(--accent-orange);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .job-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .job-card-header {
+            padding: 1.25rem;
+            background: linear-gradient(135deg, #f9f9f9 0%, #f0f0f0 100%);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .job-id {
+            font-weight: 700;
+            color: var(--accent-orange);
+            font-size: var(--font-size-sm);
+            margin-bottom: 0.25rem;
+        }
+
+        .job-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: var(--font-size-lg);
+            margin: 0;
+        }
+
+        .job-card-body {
+            padding: 1.25rem;
+        }
+
+        .job-detail {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            font-size: var(--font-size-sm);
+        }
+
+        .job-label {
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .job-value {
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-green);
+            transition: width 0.3s;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-in-progress {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .status-completed {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .job-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .job-actions .btn {
+            flex: 1;
+            font-size: var(--font-size-xs);
+            padding: 0.5rem;
+        }
+
+        .filters-section {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: var(--border-radius);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            font-size: var(--font-size-xs);
+            text-transform: uppercase;
+            color: var(--text-dark);
+        }
+
+        .filter-group select {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-sm);
+            min-width: 150px;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .action-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .action-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .alert-success {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .modal-header {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+        }
+
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-sm);
+            font-family: inherit;
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .job-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filters-section {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Simplified Navigation (Mobile-first design) -->
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <h2 style="margin: 0; color: var(--accent-orange); font-weight: 700;">BARRON</h2>
+            </div>
+            <div style="margin-left: auto; display: flex; gap: 1rem; align-items: center;">
+                <div class="avatar" id="userAvatar" style="width: 40px; height: 40px; background: var(--accent-orange); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; cursor: pointer;">O</div>
+            </div>
+        </nav>
+
+        <!-- Welcome Card -->
+        <div class="welcome-card">
+            <h2>Welcome, <span id="operatorName">Operator</span></h2>
+            <p>Here are your assigned jobs for today. Click on a job to view details and update status.</p>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Assigned Jobs</div>
+                <div class="stat-value" id="assignedJobs">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">In Progress</div>
+                <div class="stat-value" id="inProgressJobs">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Completed Today</div>
+                <div class="stat-value" id="completedJobs">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Pending</div>
+                <div class="stat-value" id="pendingJobs">0</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <div class="action-card" onclick="showAlert('QR Code scanning feature coming soon', 'info')">
+                <div class="action-icon">📱</div>
+                <p class="action-title">Scan Job</p>
+            </div>
+            <div class="action-card" onclick="openReportIssueModal()">
+                <div class="action-icon">⚠️</div>
+                <p class="action-title">Report Issue</p>
+            </div>
+            <div class="action-card" onclick="showAlert('Break log coming soon', 'info')">
+                <div class="action-icon">⏱️</div>
+                <p class="action-title">Log Break</p>
+            </div>
+            <div class="action-card" onclick="handleLogout()">
+                <div class="action-icon">🚪</div>
+                <p class="action-title">Logout</p>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-section">
+            <div class="filter-group">
+                <label>Status</label>
+                <select id="filterStatus" onchange="applyOperatorFilters()">
+                    <option value="">All</option>
+                    <option value="pending">Pending</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Priority</label>
+                <select id="filterPriority" onchange="applyOperatorFilters()">
+                    <option value="">All</option>
+                    <option value="high">High</option>
+                    <option value="normal">Normal</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Job Cards -->
+        <div id="loadingSpinner" style="display: none; text-align: center; padding: 2rem;">
+            <div class="spinner-border"></div>
+        </div>
+
+        <div class="job-cards" id="jobCardsContainer" style="display: none;">
+        </div>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <h3>No Jobs Assigned</h3>
+            <p>You don't have any jobs assigned to you at the moment.</p>
+        </div>
+    </div>
+
+    <!-- Report Issue Modal -->
+    <div id="reportIssueModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Report Production Issue</div>
+            
+            <div class="form-group">
+                <label>Job</label>
+                <select id="issueJobSelect">
+                    <option value="">Select your current job...</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Issue Type</label>
+                <select id="issueType">
+                    <option value="">Select issue type...</option>
+                    <option value="equipment">Equipment Malfunction</option>
+                    <option value="quality">Quality Issue</option>
+                    <option value="material">Material Shortage</option>
+                    <option value="injury">Safety/Injury</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="issueDescription" placeholder="Describe the issue..."></textarea>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeReportIssueModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="submitReportIssue()">Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Update Modal -->
+    <div id="statusUpdateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Update Job Status</div>
+            
+            <div class="form-group">
+                <label>Current Quantity Completed</label>
+                <input type="number" id="completedQty" placeholder="0" min="0">
+            </div>
+
+            <div class="form-group">
+                <label>New Status</label>
+                <select id="newStatus">
+                    <option value="in-progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="on-hold">On Hold</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea id="statusNotes" placeholder="Any notes about this status update..."></textarea>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeStatusUpdateModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="submitStatusUpdate()">Update</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        let allJobs = [];
+        let filteredJobs = [];
+        let currentJobId = null;
+
+        // Check authentication
+        if (!api.isAuthenticated()) {
+            window.location.href = 'login.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserInfo();
+            loadOperatorJobs();
+        });
+
+        function loadUserInfo() {
+            const user = JSON.parse(localStorage.getItem('user_info') || '{}');
+            const avatar = document.getElementById('userAvatar');
+            const nameDisplay = document.getElementById('operatorName');
+            
+            if (user.email) {
+                const initials = user.email.substring(0, 1).toUpperCase();
+                avatar.textContent = initials;
+                nameDisplay.textContent = user.email.split('@')[0];
+            }
+            avatar.addEventListener('click', handleLogout);
+        }
+
+        async function loadOperatorJobs() {
+            const spinner = document.getElementById('loadingSpinner');
+            spinner.style.display = 'block';
+
+            try {
+                // Get user's assigned orders from their dashboard
+                const data = await api.getOrders();
+                
+                // Filter orders assigned to current operator (in production scenario)
+                allJobs = (data || []).map(order => ({
+                    job_id: order.order_id,
+                    order_number: order.order_number,
+                    product_name: order.product_name,
+                    quantity: order.quantity,
+                    completed_quantity: order.completed_quantity || 0,
+                    status: order.status,
+                    due_date: order.due_date,
+                    priority: order.priority || 'normal',
+                    notes: order.notes || ''
+                }));
+
+                filteredJobs = [...allJobs];
+                displayOperatorJobs();
+                updateOperatorStats();
+                populateJobSelect();
+            } catch (error) {
+                showAlert(`Error loading your jobs: ${error.message}`, 'error');
+                console.error('Error:', error);
+            } finally {
+                spinner.style.display = 'none';
+            }
+        }
+
+        function displayOperatorJobs() {
+            const container = document.getElementById('jobCardsContainer');
+            const emptyState = document.getElementById('emptyState');
+
+            if (filteredJobs.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            container.style.display = 'grid';
+            emptyState.style.display = 'none';
+
+            container.innerHTML = filteredJobs.map(job => {
+                const progress = job.quantity > 0 ? (job.completed_quantity / job.quantity) * 100 : 0;
+                const statusClass = `status-${job.status || 'pending'}`;
+                
+                return `
+                    <div class="job-card">
+                        <div class="job-card-header">
+                            <div class="job-id">#${job.order_number}</div>
+                            <h3 class="job-title">${job.product_name}</h3>
+                        </div>
+                        <div class="job-card-body">
+                            <span class="status-badge ${statusClass}">${(job.status || 'pending').replace('-', ' ').toUpperCase()}</span>
+                            
+                            <div class="job-detail">
+                                <span class="job-label">Target Qty:</span>
+                                <span class="job-value">${job.quantity} units</span>
+                            </div>
+                            
+                            <div class="job-detail">
+                                <span class="job-label">Completed:</span>
+                                <span class="job-value">${job.completed_quantity} units</span>
+                            </div>
+
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progress}%;"></div>
+                            </div>
+
+                            <div class="job-detail">
+                                <span class="job-label">Progress:</span>
+                                <span class="job-value">${Math.round(progress)}%</span>
+                            </div>
+
+                            <div class="job-detail">
+                                <span class="job-label">Due:</span>
+                                <span class="job-value">${new Date(job.due_date).toLocaleDateString()}</span>
+                            </div>
+
+                            <div class="job-actions">
+                                <button class="btn btn-primary btn-sm" onclick="openStatusUpdateModal('${job.job_id}')">Update Status</button>
+                                <button class="btn btn-outline btn-sm" onclick="openReportIssueModal()">Report Issue</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateOperatorStats() {
+            const total = allJobs.length;
+            const inProgress = allJobs.filter(j => j.status === 'in-progress').length;
+            const completed = allJobs.filter(j => j.status === 'completed').length;
+            const pending = allJobs.filter(j => j.status === 'pending').length;
+
+            document.getElementById('assignedJobs').textContent = total;
+            document.getElementById('inProgressJobs').textContent = inProgress;
+            document.getElementById('completedJobs').textContent = completed;
+            document.getElementById('pendingJobs').textContent = pending;
+        }
+
+        function applyOperatorFilters() {
+            const status = document.getElementById('filterStatus').value;
+            const priority = document.getElementById('filterPriority').value;
+
+            filteredJobs = allJobs.filter(job => {
+                let match = true;
+                if (status && job.status !== status) match = false;
+                if (priority && job.priority !== priority) match = false;
+                return match;
+            });
+
+            displayOperatorJobs();
+        }
+
+        function populateJobSelect() {
+            const select = document.getElementById('issueJobSelect');
+            select.innerHTML = '<option value="">Select your current job...</option>' + 
+                allJobs.map(j => `<option value="${j.job_id}">${j.order_number} - ${j.product_name}</option>`).join('');
+        }
+
+        function openStatusUpdateModal(jobId) {
+            currentJobId = jobId;
+            const job = allJobs.find(j => j.job_id === jobId);
+            if (job) {
+                document.getElementById('completedQty').value = job.completed_quantity;
+                document.getElementById('newStatus').value = job.status || 'in-progress';
+                document.getElementById('statusNotes').value = '';
+            }
+            document.getElementById('statusUpdateModal').style.display = 'block';
+        }
+
+        function closeStatusUpdateModal() {
+            document.getElementById('statusUpdateModal').style.display = 'none';
+        }
+
+        async function submitStatusUpdate() {
+            const qty = parseInt(document.getElementById('completedQty').value) || 0;
+            const status = document.getElementById('newStatus').value;
+            const notes = document.getElementById('statusNotes').value;
+
+            try {
+                await api.updateOrder(currentJobId, {
+                    completed_quantity: qty,
+                    status: status,
+                    notes: notes
+                });
+
+                showAlert('Job status updated successfully', 'success');
+                closeStatusUpdateModal();
+                loadOperatorJobs();
+            } catch (error) {
+                showAlert(`Error updating job: ${error.message}`, 'error');
+            }
+        }
+
+        function openReportIssueModal() {
+            document.getElementById('reportIssueModal').style.display = 'block';
+        }
+
+        function closeReportIssueModal() {
+            document.getElementById('reportIssueModal').style.display = 'none';
+        }
+
+        async function submitReportIssue() {
+            const jobId = document.getElementById('issueJobSelect').value;
+            const issueType = document.getElementById('issueType').value;
+            const description = document.getElementById('issueDescription').value;
+
+            if (!jobId || !issueType || !description) {
+                showAlert('Please fill in all fields', 'error');
+                return;
+            }
+
+            try {
+                await api.createDefect({
+                    order_id: jobId,
+                    defect_type: 'internal',
+                    severity: issueType === 'injury' ? 'critical' : 'high',
+                    quantity: 1,
+                    description: `[${issueType}] ${description}`
+                });
+
+                showAlert('Issue reported successfully. A supervisor has been notified.', 'success');
+                closeReportIssueModal();
+            } catch (error) {
+                showAlert(`Error reporting issue: ${error.message}`, 'error');
+            }
+        }
+
+        function showAlert(message, type = 'error') {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.appendChild(alert);
+            setTimeout(() => alert.remove(), 5000);
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to log out?')) {
+                localStorage.removeItem('auth_token');
+                localStorage.removeItem('user_info');
+                window.location.href = 'login.html';
+            }
+        }
+
+        window.onclick = (event) => {
+            const reportModal = document.getElementById('reportIssueModal');
+            const statusModal = document.getElementById('statusUpdateModal');
+            if (event.target === reportModal) closeReportIssueModal();
+            if (event.target === statusModal) closeStatusUpdateModal();
+        };
+
+        // Auto-refresh every 60 seconds
+        setInterval(loadOperatorJobs, 60000);
+    </script>
+</body>
+</html>

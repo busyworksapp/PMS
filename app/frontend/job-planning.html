@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Planning - Barron Manufacturing</title>
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        header {
+            background: #0d0d0d;
+            color: white;
+            padding: 16px 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ff6b35;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: #ff6b35;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: #ff5722;
+        }
+
+        .main-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            color: #666;
+        }
+
+        select, input[type="date"], input[type="text"] {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+            color: #333;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #ff6b35;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .btn-primary {
+            padding: 8px 16px;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #ff5722;
+        }
+
+        /* Gantt Container */
+        .gantt-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+
+        .gantt-header {
+            padding: 16px;
+            background: #f9f9f9;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            gap: 16px;
+        }
+
+        .gantt-header-label {
+            font-weight: 600;
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .gantt-content {
+            display: flex;
+            overflow-x: auto;
+        }
+
+        .gantt-rows {
+            flex: 0 0 300px;
+            border-right: 1px solid #e0e0e0;
+            background: #f9f9f9;
+        }
+
+        .gantt-chart {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gantt-row {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+            min-height: 50px;
+            align-items: center;
+        }
+
+        .gantt-row-label {
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .gantt-bars {
+            flex: 1;
+            display: flex;
+            position: relative;
+            padding: 8px;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .gantt-bar {
+            height: 32px;
+            background: linear-gradient(135deg, #ff6b35, #ff8c5a);
+            border-radius: 4px;
+            border: 1px solid #ff5722;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            position: absolute;
+        }
+
+        .gantt-bar:hover {
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+            transform: scale(1.05);
+        }
+
+        .gantt-timeline {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .gantt-day {
+            flex: 0 0 40px;
+            text-align: center;
+            padding: 8px 0;
+            border-right: 1px solid #e0e0e0;
+            font-size: 11px;
+            font-weight: 600;
+            color: #999;
+        }
+
+        /* Order Details Table */
+        .orders-section {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f9f9f9;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #666;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-scheduled {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .status-in-progress {
+            background: #cff4fc;
+            color: #055160;
+        }
+
+        .status-completed {
+            background: #d1e7dd;
+            color: #0a3622;
+        }
+
+        .status-on-hold {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .btn-action {
+            padding: 6px 12px;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            background: #ff5722;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f0f0f0;
+            border-top-color: #0d0d0d;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .gantt-content {
+                overflow-x: scroll;
+            }
+
+            .gantt-rows {
+                flex: 0 0 200px;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group {
+                width: 100%;
+            }
+
+            select, input[type="date"], input[type="text"] {
+                width: 100%;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">BARRON</div>
+            <div class="nav-right">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <span id="userName">User</span>
+                </div>
+                <button class="btn-logout" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Job Planning</h1>
+            <p class="page-subtitle">Schedule orders across machines and departments</p>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label class="filter-label">Status:</label>
+                <select id="filterStatus" onchange="applyFilters()">
+                    <option value="">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="scheduled">Scheduled</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="on_hold">On Hold</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Department:</label>
+                <select id="filterDept" onchange="applyFilters()">
+                    <option value="">All Departments</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Date Range:</label>
+                <input type="date" id="dateFrom" onchange="applyFilters()">
+                <span style="color: #999;">to</span>
+                <input type="date" id="dateTo" onchange="applyFilters()">
+            </div>
+
+            <button class="btn-primary" onclick="newOrder()">+ New Order</button>
+        </div>
+
+        <!-- Gantt Chart -->
+        <div class="gantt-container">
+            <div class="gantt-header">
+                <span class="gantt-header-label">Order / Machine</span>
+                <span class="gantt-header-label">Timeline (Days)</span>
+            </div>
+            <div class="gantt-content">
+                <div class="gantt-rows" id="ganttRows"></div>
+                <div class="gantt-chart" id="ganttChart"></div>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="orders-section">
+            <div class="section-title">Order Details</div>
+            <div id="ordersContainer" class="loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/toast.js"></script>
+    <script src="js/gantt-manager.js"></script>
+    <script>
+        // Check authentication
+        if (!api.isAuthenticated()) {
+            window.location.href = 'login.html';
+        }
+
+        let allOrders = [];
+        let departments = [];
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            const userInitial = (api.role || 'U')[0].toUpperCase();
+            document.getElementById('userAvatar').textContent = userInitial;
+            document.getElementById('userName').textContent = api.role || 'User';
+            
+            loadDepartments();
+            loadOrders();
+        });
+
+        async function loadDepartments() {
+            try {
+                const response = await api.getDepartments();
+                departments = response.data || [];
+                
+                const deptSelect = document.getElementById('filterDept');
+                departments.forEach(dept => {
+                    const option = document.createElement('option');
+                    option.value = dept.id;
+                    option.textContent = dept.name;
+                    deptSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Failed to load departments:', error);
+            }
+        }
+
+        async function loadOrders() {
+            try {
+                document.getElementById('ordersContainer').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+                
+                const response = await api.getOrders({ 
+                    skip: 0, 
+                    limit: 50,
+                    status: document.getElementById('filterStatus').value || undefined
+                });
+                
+                allOrders = response.data || [];
+                renderGanttChart();
+                renderOrdersTable();
+            } catch (error) {
+                console.error('Failed to load orders:', error);
+                document.getElementById('ordersContainer').innerHTML = 
+                    '<div class="empty-state">Failed to load orders. Please refresh the page.</div>';
+            }
+        }
+
+        function applyFilters() {
+            loadOrders();
+        }
+
+        function renderGanttChart() {
+            const ganttRows = document.getElementById('ganttRows');
+            const ganttChart = document.getElementById('ganttChart');
+            
+            ganttRows.innerHTML = '';
+            ganttChart.innerHTML = '';
+
+            if (allOrders.length === 0) {
+                ganttRows.innerHTML = '<div class="empty-state">No orders to display</div>';
+                return;
+            }
+
+            // Calculate date range
+            const today = new Date();
+            const daysToShow = 30;
+            const dates = [];
+            
+            for (let i = 0; i < daysToShow; i++) {
+                const date = new Date(today);
+                date.setDate(date.getDate() + i);
+                dates.push(date);
+            }
+
+            // Timeline header
+            const timelineDiv = document.createElement('div');
+            timelineDiv.className = 'gantt-timeline';
+            dates.forEach(date => {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'gantt-day';
+                dayDiv.textContent = date.getDate();
+                timelineDiv.appendChild(dayDiv);
+            });
+            ganttChart.appendChild(timelineDiv);
+
+            // Rows for each order
+            allOrders.forEach(order => {
+                // Left side (order info)
+                const rowLabel = document.createElement('div');
+                rowLabel.className = 'gantt-row';
+                rowLabel.innerHTML = `
+                    <div class="gantt-row-label">
+                        <div style="overflow: hidden; text-overflow: ellipsis;">
+                            <strong>${order.order_number}</strong><br>
+                            <small style="color: #999;">${order.customer_name}</small>
+                        </div>
+                    </div>
+                `;
+                ganttRows.appendChild(rowLabel);
+
+                // Right side (bars)
+                const barsDiv = document.createElement('div');
+                barsDiv.className = 'gantt-row';
+                barsDiv.style.position = 'relative';
+                barsDiv.style.padding = '8px';
+                
+                const startDate = new Date(order.start_date);
+                const endDate = new Date(order.end_date);
+                
+                // Calculate bar position
+                const daysFromStart = Math.floor((startDate - today) / (1000 * 60 * 60 * 24));
+                const duration = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) || 1;
+                
+                if (daysFromStart < daysToShow && (daysFromStart + duration) > 0) {
+                    const bar = document.createElement('div');
+                    bar.className = 'gantt-bar';
+                    bar.style.left = (Math.max(0, daysFromStart) * 40) + 'px';
+                    bar.style.width = (duration * 40) + 'px';
+                    bar.textContent = order.order_number;
+                    bar.onclick = () => viewOrderDetail(order.id);
+                    barsDiv.appendChild(bar);
+                }
+                
+                ganttChart.appendChild(barsDiv);
+            });
+        }
+
+        function renderOrdersTable() {
+            if (allOrders.length === 0) {
+                document.getElementById('ordersContainer').innerHTML = 
+                    '<div class="empty-state">No orders found</div>';
+                return;
+            }
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Customer</th>
+                            <th>Product</th>
+                            <th>Qty</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            allOrders.forEach(order => {
+                const statusClass = `status-${order.status}`.replace(/_/g, '-');
+                const startDate = new Date(order.start_date).toLocaleDateString();
+                const endDate = new Date(order.end_date).toLocaleDateString();
+
+                html += `
+                    <tr>
+                        <td><strong>${order.order_number}</strong></td>
+                        <td>${order.customer_name}</td>
+                        <td>${order.product?.name || 'N/A'}</td>
+                        <td>${order.quantity}</td>
+                        <td>${startDate}</td>
+                        <td>${endDate}</td>
+                        <td><span class="status-badge ${statusClass}">${order.status}</span></td>
+                        <td>
+                            <button class="btn-action" onclick="viewOrderDetail(${order.id})">View</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('ordersContainer').innerHTML = html;
+        }
+
+        function viewOrderDetail(orderId) {
+            window.location.href = `order-detail.html?id=${orderId}`;
+        }
+
+        function newOrder() {
+            window.location.href = 'order-new.html';
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                api.logout();
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>

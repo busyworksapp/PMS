@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quality & Defects - Barron Manufacturing</title>
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        header {
+            background: #0d0d0d;
+            color: white;
+            padding: 16px 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ff6b35;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: #ff6b35;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: #ff5722;
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 12px 16px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            color: #999;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            margin-bottom: -2px;
+        }
+
+        .tab.active {
+            color: #ff6b35;
+            border-bottom-color: #ff6b35;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            color: #666;
+        }
+
+        select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #ff6b35;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .btn-primary {
+            padding: 8px 16px;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #ff5722;
+        }
+
+        /* Cards Section */
+        .cards-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .defect-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #ff6b35;
+            transition: all 0.2s;
+        }
+
+        .defect-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 16px;
+            color: #1a1a1a;
+        }
+
+        .card-badge {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-internal {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .badge-return {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .card-meta {
+            font-size: 13px;
+            color: #666;
+            margin: 8px 0;
+        }
+
+        .card-description {
+            font-size: 14px;
+            color: #555;
+            margin: 12px 0;
+            line-height: 1.5;
+        }
+
+        .card-footer {
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            flex: 1;
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-small:hover {
+            background: #f9f9f9;
+            border-color: #ff6b35;
+            color: #ff6b35;
+        }
+
+        .btn-small.primary {
+            background: #ff6b35;
+            color: white;
+            border-color: #ff6b35;
+        }
+
+        .btn-small.primary:hover {
+            background: #ff5722;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-open {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d1e7dd;
+            color: #0a3622;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-closed {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f0f0f0;
+            border-top-color: #0d0d0d;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: block;
+            font-size: 14px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .modal-footer {
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn-cancel {
+            padding: 8px 16px;
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-cancel:hover {
+            background: #e0e0e0;
+        }
+
+        @media (max-width: 768px) {
+            .cards-section {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group {
+                width: 100%;
+            }
+
+            select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">BARRON</div>
+            <div class="nav-right">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <span id="userName">User</span>
+                </div>
+                <button class="btn-logout" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Quality & Defects</h1>
+            <p class="page-subtitle">Manage internal rejects and customer returns</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('rejects')">Internal Rejects</button>
+            <button class="tab" onclick="switchTab('returns')">Customer Returns</button>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label class="filter-label">Status:</label>
+                <select id="filterStatus" onchange="applyFilters()">
+                    <option value="">All Status</option>
+                    <option value="open">Open</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                    <option value="closed">Closed</option>
+                </select>
+            </div>
+
+            <button class="btn-primary" onclick="newDefect()">+ New Defect</button>
+        </div>
+
+        <!-- Rejects Section -->
+        <div id="rejectsSection">
+            <div id="rejectsContainer" class="loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+
+        <!-- Returns Section -->
+        <div id="returnsSection" style="display: none;">
+            <div id="returnsContainer" class="loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Defect Modal -->
+    <div class="modal" id="defectModal">
+        <div class="modal-content">
+            <h2 class="modal-title">Create New Defect</h2>
+            
+            <form id="defectForm" onsubmit="submitDefect(event)">
+                <div class="form-group">
+                    <label class="form-label">Order *</label>
+                    <select id="orderSelect" required>
+                        <option value="">Select an order...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Defect Type *</label>
+                    <select id="defectType" required>
+                        <option value="">Select type...</option>
+                        <option value="internal_reject">Internal Reject</option>
+                        <option value="customer_return">Customer Return</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Severity *</label>
+                    <select id="severity" required>
+                        <option value="">Select severity...</option>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description *</label>
+                    <textarea id="description" placeholder="Describe the defect..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Quantity Affected *</label>
+                    <input type="number" id="quantity" min="1" placeholder="Number of units" required>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Create Defect</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // Check authentication
+        if (!api.isAuthenticated()) {
+            window.location.href = 'login.html';
+        }
+
+        let currentTab = 'rejects';
+        let allRejects = [];
+        let allReturns = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            const userInitial = (api.role || 'U')[0].toUpperCase();
+            document.getElementById('userAvatar').textContent = userInitial;
+            document.getElementById('userName').textContent = api.role || 'User';
+            
+            loadOrders();
+            loadRejects();
+            loadReturns();
+        });
+
+        async function loadOrders() {
+            try {
+                const response = await api.getOrders({ limit: 100 });
+                const orders = response.data || [];
+                
+                const select = document.getElementById('orderSelect');
+                orders.forEach(order => {
+                    const option = document.createElement('option');
+                    option.value = order.id;
+                    option.textContent = `${order.order_number} - ${order.customer_name}`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Failed to load orders:', error);
+            }
+        }
+
+        async function loadRejects() {
+            try {
+                const response = await api.getDefects();
+                allRejects = (response.data || []).filter(d => d.defect_type === 'internal_reject');
+                renderRejects();
+            } catch (error) {
+                console.error('Failed to load rejects:', error);
+                document.getElementById('rejectsContainer').innerHTML = '<div class="empty-state">Failed to load rejects</div>';
+            }
+        }
+
+        async function loadReturns() {
+            try {
+                const response = await api.getDefects();
+                allReturns = (response.data || []).filter(d => d.defect_type === 'customer_return');
+                renderReturns();
+            } catch (error) {
+                console.error('Failed to load returns:', error);
+                document.getElementById('returnsContainer').innerHTML = '<div class="empty-state">Failed to load returns</div>';
+            }
+        }
+
+        function renderRejects() {
+            if (allRejects.length === 0) {
+                document.getElementById('rejectsContainer').innerHTML = 
+                    '<div class="empty-state">No reject tickets found</div>';
+                return;
+            }
+
+            let html = '<div class="cards-section">';
+            
+            allRejects.forEach(reject => {
+                html += `
+                    <div class="defect-card">
+                        <div class="card-header">
+                            <div class="card-title">Reject #${reject.id}</div>
+                            <span class="card-badge badge-internal">INTERNAL</span>
+                        </div>
+                        <div class="card-meta">
+                            Order: <strong>${reject.order?.order_number || 'N/A'}</strong>
+                        </div>
+                        <div class="card-meta">
+                            Status: <span class="status-badge status-${reject.status}">${reject.status}</span>
+                        </div>
+                        <div class="card-description">
+                            ${reject.description || 'No description'}
+                        </div>
+                        <div class="card-meta">
+                            <small>Qty: ${reject.quantity_affected} units</small>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn-small" onclick="viewDefect(${reject.id})">View</button>
+                            ${reject.status === 'open' ? `<button class="btn-small primary" onclick="approveReject(${reject.id})">Approve</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            document.getElementById('rejectsContainer').innerHTML = html;
+        }
+
+        function renderReturns() {
+            if (allReturns.length === 0) {
+                document.getElementById('returnsContainer').innerHTML = 
+                    '<div class="empty-state">No customer returns found</div>';
+                return;
+            }
+
+            let html = '<div class="cards-section">';
+            
+            allReturns.forEach(ret => {
+                html += `
+                    <div class="defect-card">
+                        <div class="card-header">
+                            <div class="card-title">Return #${ret.id}</div>
+                            <span class="card-badge badge-return">RETURN</span>
+                        </div>
+                        <div class="card-meta">
+                            Order: <strong>${ret.order?.order_number || 'N/A'}</strong>
+                        </div>
+                        <div class="card-meta">
+                            Status: <span class="status-badge status-${ret.status}">${ret.status}</span>
+                        </div>
+                        <div class="card-description">
+                            ${ret.description || 'No description'}
+                        </div>
+                        <div class="card-meta">
+                            <small>Qty: ${ret.quantity_affected} units</small>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn-small" onclick="viewDefect(${ret.id})">View</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            document.getElementById('returnsContainer').innerHTML = html;
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update active tab
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Show/hide sections
+            document.getElementById('rejectsSection').style.display = tab === 'rejects' ? 'block' : 'none';
+            document.getElementById('returnsSection').style.display = tab === 'returns' ? 'block' : 'none';
+        }
+
+        function applyFilters() {
+            loadRejects();
+            loadReturns();
+        }
+
+        function newDefect() {
+            document.getElementById('defectForm').reset();
+            document.getElementById('defectModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('defectModal').classList.remove('active');
+        }
+
+        async function submitDefect(event) {
+            event.preventDefault();
+            
+            try {
+                const payload = {
+                    order_id: parseInt(document.getElementById('orderSelect').value),
+                    defect_type: document.getElementById('defectType').value,
+                    severity: document.getElementById('severity').value,
+                    description: document.getElementById('description').value,
+                    quantity_affected: parseInt(document.getElementById('quantity').value)
+                };
+
+                const response = await api.createDefect(payload);
+                
+                if (response.ok || response.id) {
+                    alert('Defect created successfully!');
+                    closeModal();
+                    loadRejects();
+                    loadReturns();
+                } else {
+                    alert('Failed to create defect');
+                }
+            } catch (error) {
+                console.error('Error creating defect:', error);
+                alert('Error creating defect: ' + error.message);
+            }
+        }
+
+        async function approveReject(rejectId) {
+            try {
+                const response = await api.approveReject(rejectId);
+                if (response.ok) {
+                    alert('Reject approved!');
+                    loadRejects();
+                } else {
+                    alert('Failed to approve reject');
+                }
+            } catch (error) {
+                console.error('Error approving reject:', error);
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function viewDefect(defectId) {
+            window.location.href = `defect-detail.html?id=${defectId}`;
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                api.logout();
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>

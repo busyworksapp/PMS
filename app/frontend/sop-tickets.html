@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOP/NCR Tickets - Barron Production Management</title>
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .tickets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .ticket-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            border-left: 4px solid var(--accent-orange);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .ticket-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .ticket-header {
+            padding: 1.25rem;
+            background: #f9f9f9;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+
+        .ticket-id {
+            font-weight: 700;
+            color: var(--accent-orange);
+            margin-bottom: 0.5rem;
+        }
+
+        .ticket-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .ticket-body {
+            padding: 1.25rem;
+        }
+
+        .ticket-description {
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .ticket-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .ticket-meta-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: var(--font-size-sm);
+        }
+
+        .ticket-meta-label {
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .ticket-meta-value {
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .ticket-footer {
+            padding-top: 1rem;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .ticket-footer button {
+            flex: 1;
+            padding: 0.5rem;
+            font-size: var(--font-size-xs);
+            text-align: center;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-open {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .status-assigned {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-in-progress {
+            background: #d1e6f5;
+            color: #0c5460;
+        }
+
+        .status-completed {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-escalated {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .priority-high {
+            background: #ff6b35;
+            color: white;
+        }
+
+        .priority-normal {
+            background: #ffd60a;
+            color: #333;
+        }
+
+        .priority-low {
+            background: #ccf0d8;
+            color: #0f5132;
+        }
+
+        .filters-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f9f9f9;
+            border-radius: var(--border-radius);
+            border: 1px solid #e0e0e0;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-dark);
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-sm);
+        }
+
+        .filter-actions {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.5rem;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--accent-orange);
+        }
+
+        .stat-label {
+            font-size: var(--font-size-xs);
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .modal-header {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-sm);
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .alert-success {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        @media (max-width: 768px) {
+            .tickets-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Navigation -->
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <h2 style="margin: 0; color: var(--accent-orange); font-weight: 700;">BARRON</h2>
+            </div>
+            <div class="navbar-menu">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="order-list.html" class="nav-link">Orders</a>
+                <a href="defects.html" class="nav-link">Defects</a>
+                <a href="sop-tickets.html" class="nav-link active">SOP Tickets</a>
+                <a href="maintenance.html" class="nav-link">Maintenance</a>
+            </div>
+            <div class="navbar-end">
+                <div class="user-menu">
+                    <div class="avatar" id="userAvatar" style="width: 40px; height: 40px; background: var(--accent-orange); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; cursor: pointer;">U</div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 style="margin: 0;">SOP/NCR Compliance</h1>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="openCreateTicketModal()">+ Create Ticket</button>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+
+        <!-- Statistics -->
+        <div class="stats-row">
+            <div class="stat-box">
+                <div class="stat-label">Open Tickets</div>
+                <div class="stat-value" id="openTickets">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">My Assignments</div>
+                <div class="stat-value" id="assignedTickets">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Escalated</div>
+                <div class="stat-value" id="escalatedTickets">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Completed</div>
+                <div class="stat-value" id="completedTickets">0</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-section">
+            <div class="filter-group">
+                <label>Status</label>
+                <select id="filterStatus" onchange="applyFilters()">
+                    <option value="">All Statuses</option>
+                    <option value="open">Open</option>
+                    <option value="assigned">Assigned</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="escalated">Escalated</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Priority</label>
+                <select id="filterPriority" onchange="applyFilters()">
+                    <option value="">All Priorities</option>
+                    <option value="high">High</option>
+                    <option value="normal">Normal</option>
+                    <option value="low">Low</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Search</label>
+                <input type="text" id="searchTerm" placeholder="Search by ID or title..." onkeyup="applyFilters()">
+            </div>
+            <div class="filter-actions">
+                <button class="btn btn-outline" onclick="resetFilters()">Reset</button>
+            </div>
+        </div>
+
+        <!-- Tickets Grid -->
+        <div id="loadingSpinner" style="display: none; text-align: center; padding: 2rem;">
+            <div class="spinner-border"></div>
+        </div>
+
+        <div class="tickets-grid" id="ticketsGrid" style="display: none;">
+        </div>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <h3>No Tickets Found</h3>
+            <p>Try adjusting your filters or create a new ticket.</p>
+        </div>
+    </div>
+
+    <!-- Create Ticket Modal -->
+    <div id="createTicketModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Create SOP/NCR Ticket</div>
+            
+            <div class="form-group">
+                <label>Ticket Title</label>
+                <input type="text" id="ticketTitle" placeholder="Brief description of the compliance issue">
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="ticketDescription" placeholder="Detailed description of the issue and required actions"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Priority</label>
+                <select id="ticketPriority">
+                    <option value="normal">Normal</option>
+                    <option value="high">High</option>
+                    <option value="low">Low</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Category</label>
+                <select id="ticketCategory">
+                    <option value="sop">SOP Violation</option>
+                    <option value="ncr">Non-Conformance Report</option>
+                    <option value="audit">Audit Finding</option>
+                    <option value="corrective">Corrective Action</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Department</label>
+                <select id="ticketDepartment">
+                    <option value="">Select department...</option>
+                </select>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeCreateTicketModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="submitCreateTicket()">Create Ticket</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assign Ticket Modal -->
+    <div id="assignTicketModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Assign Ticket</div>
+            
+            <div class="form-group">
+                <label>Assign To</label>
+                <select id="assignToUser">
+                    <option value="">Select user...</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Target Date</label>
+                <input type="date" id="targetDate">
+            </div>
+
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea id="assignNotes" placeholder="Assignment notes..."></textarea>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeAssignTicketModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="submitAssignTicket()">Assign</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        let allTickets = [];
+        let filteredTickets = [];
+        let currentTicketId = null;
+
+        // Check authentication
+        if (!api.isAuthenticated()) {
+            window.location.href = 'login.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserInfo();
+            loadTickets();
+            loadDepartments();
+        });
+
+        function loadUserInfo() {
+            const user = JSON.parse(localStorage.getItem('user_info') || '{}');
+            const avatar = document.getElementById('userAvatar');
+            if (user.email) {
+                const initials = user.email.substring(0, 2).toUpperCase();
+                avatar.textContent = initials;
+            }
+            avatar.addEventListener('click', handleLogout);
+        }
+
+        async function loadTickets() {
+            const spinner = document.getElementById('loadingSpinner');
+            spinner.style.display = 'block';
+
+            try {
+                const data = await api.getSOPTickets();
+                allTickets = data || [];
+                filteredTickets = [...allTickets];
+                displayTickets();
+                updateStats();
+            } catch (error) {
+                showAlert(`Error loading tickets: ${error.message}`, 'error');
+                console.error('Error:', error);
+            } finally {
+                spinner.style.display = 'none';
+            }
+        }
+
+        function displayTickets() {
+            const grid = document.getElementById('ticketsGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            if (filteredTickets.length === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            grid.style.display = 'grid';
+            emptyState.style.display = 'none';
+
+            grid.innerHTML = filteredTickets.map(ticket => `
+                <div class="ticket-card" onclick="viewTicket('${ticket.ticket_id}')">
+                    <div class="ticket-header">
+                        <div>
+                            <div class="ticket-id">${ticket.ticket_number}</div>
+                            <div class="ticket-title">${ticket.title}</div>
+                        </div>
+                        <span class="status-badge status-${ticket.status}">${ticket.status.replace('-', ' ').toUpperCase()}</span>
+                    </div>
+                    <div class="ticket-body">
+                        <div class="ticket-description">${ticket.description.substring(0, 80)}...</div>
+                        <div class="ticket-meta">
+                            <div class="ticket-meta-item">
+                                <span class="ticket-meta-label">Priority:</span>
+                                <span class="priority-badge priority-${ticket.priority}">${ticket.priority.toUpperCase()}</span>
+                            </div>
+                            <div class="ticket-meta-item">
+                                <span class="ticket-meta-label">Category:</span>
+                                <span class="ticket-meta-value">${ticket.category || 'N/A'}</span>
+                            </div>
+                            <div class="ticket-meta-item">
+                                <span class="ticket-meta-label">Created:</span>
+                                <span class="ticket-meta-value">${new Date(ticket.created_at).toLocaleDateString()}</span>
+                            </div>
+                            ${ticket.assigned_to ? `<div class="ticket-meta-item">
+                                <span class="ticket-meta-label">Assigned:</span>
+                                <span class="ticket-meta-value">${ticket.assigned_to}</span>
+                            </div>` : ''}
+                        </div>
+                        <div class="ticket-footer">
+                            <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); openAssignModal('${ticket.ticket_id}')">Assign</button>
+                            <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); completeTicket('${ticket.ticket_id}')">Complete</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            const open = allTickets.filter(t => t.status === 'open').length;
+            const assigned = allTickets.filter(t => t.status === 'assigned').length;
+            const escalated = allTickets.filter(t => t.status === 'escalated').length;
+            const completed = allTickets.filter(t => t.status === 'completed').length;
+
+            document.getElementById('openTickets').textContent = open;
+            document.getElementById('assignedTickets').textContent = assigned;
+            document.getElementById('escalatedTickets').textContent = escalated;
+            document.getElementById('completedTickets').textContent = completed;
+        }
+
+        function applyFilters() {
+            const status = document.getElementById('filterStatus').value;
+            const priority = document.getElementById('filterPriority').value;
+            const search = document.getElementById('searchTerm').value.toLowerCase();
+
+            filteredTickets = allTickets.filter(ticket => {
+                let match = true;
+                if (status && ticket.status !== status) match = false;
+                if (priority && ticket.priority !== priority) match = false;
+                if (search && !ticket.ticket_number.toLowerCase().includes(search) && !ticket.title.toLowerCase().includes(search)) match = false;
+                return match;
+            });
+
+            displayTickets();
+        }
+
+        function resetFilters() {
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('filterPriority').value = '';
+            document.getElementById('searchTerm').value = '';
+            filteredTickets = [...allTickets];
+            displayTickets();
+        }
+
+        async function loadDepartments() {
+            try {
+                const data = await api.getDepartments();
+                const select = document.getElementById('ticketDepartment');
+                select.innerHTML = '<option value="">Select department...</option>' + 
+                    data.map(d => `<option value="${d.department_id}">${d.department_name}</option>`).join('');
+            } catch (error) {
+                console.error('Error loading departments:', error);
+            }
+        }
+
+        function openCreateTicketModal() {
+            document.getElementById('createTicketModal').style.display = 'block';
+        }
+
+        function closeCreateTicketModal() {
+            document.getElementById('createTicketModal').style.display = 'none';
+        }
+
+        async function submitCreateTicket() {
+            const title = document.getElementById('ticketTitle').value;
+            const description = document.getElementById('ticketDescription').value;
+
+            if (!title || !description) {
+                showAlert('Please fill in all required fields', 'error');
+                return;
+            }
+
+            try {
+                await api.createSOPTicket({
+                    title: title,
+                    description: description,
+                    priority: document.getElementById('ticketPriority').value,
+                    category: document.getElementById('ticketCategory').value,
+                    department_id: document.getElementById('ticketDepartment').value
+                });
+
+                showAlert('Ticket created successfully', 'success');
+                closeCreateTicketModal();
+                loadTickets();
+            } catch (error) {
+                showAlert(`Error creating ticket: ${error.message}`, 'error');
+            }
+        }
+
+        function openAssignModal(ticketId) {
+            currentTicketId = ticketId;
+            document.getElementById('assignTicketModal').style.display = 'block';
+        }
+
+        function closeAssignTicketModal() {
+            document.getElementById('assignTicketModal').style.display = 'none';
+        }
+
+        async function submitAssignTicket() {
+            const assignTo = document.getElementById('assignToUser').value;
+            const targetDate = document.getElementById('targetDate').value;
+
+            if (!assignTo) {
+                showAlert('Please select a user to assign to', 'error');
+                return;
+            }
+
+            try {
+                await api.assignSOPTicket(currentTicketId, {
+                    assigned_to: assignTo,
+                    target_date: targetDate
+                });
+
+                showAlert('Ticket assigned successfully', 'success');
+                closeAssignTicketModal();
+                loadTickets();
+            } catch (error) {
+                showAlert(`Error assigning ticket: ${error.message}`, 'error');
+            }
+        }
+
+        async function completeTicket(ticketId) {
+            if (confirm('Mark this ticket as complete?')) {
+                try {
+                    await api.completeNCR(ticketId, {
+                        root_cause_analysis: 'Completed',
+                        preventive_measures: 'Implemented'
+                    });
+
+                    showAlert('Ticket completed successfully', 'success');
+                    loadTickets();
+                } catch (error) {
+                    showAlert(`Error completing ticket: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        function viewTicket(ticketId) {
+            const ticket = allTickets.find(t => t.ticket_id === ticketId);
+            if (!ticket) return;
+
+            const details = `
+                Ticket: ${ticket.ticket_number}
+                Title: ${ticket.title}
+                Status: ${ticket.status}
+                Priority: ${ticket.priority}
+                Description: ${ticket.description}
+            `;
+            alert(details);
+        }
+
+        function showAlert(message, type = 'error') {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.appendChild(alert);
+            setTimeout(() => alert.remove(), 5000);
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to log out?')) {
+                localStorage.removeItem('auth_token');
+                localStorage.removeItem('user_info');
+                window.location.href = 'login.html';
+            }
+        }
+
+        window.onclick = (event) => {
+            const createModal = document.getElementById('createTicketModal');
+            const assignModal = document.getElementById('assignTicketModal');
+            if (event.target === createModal) closeCreateTicketModal();
+            if (event.target === assignModal) closeAssignTicketModal();
+        };
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadTickets, 30000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barron Production Management - Login</title>
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+        .login-container {
+            display: flex;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 100%);
+        }
+
+        .login-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 48px;
+            color: white;
+        }
+
+        .login-branding {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .login-logo {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #ff6b35;
+        }
+
+        .login-tagline {
+            font-size: 18px;
+            color: #cccccc;
+            margin-bottom: 8px;
+        }
+
+        .login-description {
+            font-size: 14px;
+            color: #999999;
+            max-width: 400px;
+        }
+
+        .login-right {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 48px;
+            background-color: #f5f5f5;
+        }
+
+        .login-form {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-form h2 {
+            margin-bottom: 32px;
+            color: #1a1a1a;
+            font-size: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #0d0d0d;
+            box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: auto;
+        }
+
+        .forgot-password {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px 24px;
+            background-color: #0d0d0d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-login:hover:not(:disabled) {
+            background-color: #333333;
+        }
+
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .alert-message {
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f0f0f0;
+            border-top-color: #0d0d0d;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .btn-login.loading .loading-spinner {
+            display: inline-block;
+        }
+
+        .btn-login.loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+            }
+
+            .login-left,
+            .login-right {
+                flex: none;
+                padding: 32px;
+            }
+
+            .login-left {
+                min-height: auto;
+            }
+
+            .login-logo {
+                font-size: 36px;
+            }
+
+            .login-right {
+                min-height: auto;
+            }
+
+            .login-form h2 {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 0;
+            }
+
+            .login-left,
+            .login-right {
+                padding: 24px;
+            }
+
+            .login-logo {
+                font-size: 32px;
+            }
+
+            .login-form h2 {
+                font-size: 20px;
+                margin-bottom: 24px;
+            }
+
+            .form-group {
+                margin-bottom: 16px;
+            }
+
+            .form-options {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Left Side - Branding -->
+        <div class="login-left">
+            <div class="login-branding">
+                <div class="login-logo">BARRON</div>
+                <div class="login-tagline">Production Management System</div>
+                <div class="login-description">
+                    Complete manufacturing operations management solution
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side - Login Form -->
+        <div class="login-right">
+            <div class="login-form">
+                <h2>Sign In</h2>
+
+                <!-- Error Message -->
+                <div id="alertMessage" class="alert-message"></div>
+
+                <!-- Login Form -->
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="admin@barron.com"
+                            required
+                            autocomplete="email"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            required
+                            autocomplete="current-password"
+                        >
+                    </div>
+
+                    <div class="form-options">
+                        <label class="remember-me">
+                            <input type="checkbox" id="rememberMe" name="rememberMe">
+                            <span>Remember me</span>
+                        </label>
+                        <a href="#" class="forgot-password">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="btn-login" id="loginBtn">
+                        <span class="loading-spinner"></span>
+                        <span id="btnText">Sign In</span>
+                    </button>
+                </form>
+
+                <!-- Footer -->
+                <div style="text-align: center; margin-top: 32px; color: #666666; font-size: 13px;">
+                    <p>© 2026 Barron Manufacturing. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // Check if already logged in
+        if (api.isAuthenticated()) {
+            window.location.href = 'dashboard.html';
+        }
+
+        // Form submission
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await handleLogin();
+        });
+
+        async function handleLogin() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const alertMessage = document.getElementById('alertMessage');
+
+            // Validation
+            if (!email || !password) {
+                showError('Please enter both email and password');
+                return;
+            }
+
+            // Show loading state
+            loginBtn.disabled = true;
+            loginBtn.classList.add('loading');
+            alertMessage.classList.remove('alert-error');
+
+            try {
+                // Call API
+                const response = await api.login(email, password);
+
+                if (response.success) {
+                    // Save preference
+                    if (document.getElementById('rememberMe').checked) {
+                        localStorage.setItem('remember_email', email);
+                    }
+
+                    // Redirect to dashboard
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 500);
+                } else {
+                    showError(response.message || 'Login failed');
+                    loginBtn.disabled = false;
+                    loginBtn.classList.remove('loading');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showError(error.message || 'An error occurred during login');
+                loginBtn.disabled = false;
+                loginBtn.classList.remove('loading');
+            }
+        }
+
+        function showError(message) {
+            const alertMessage = document.getElementById('alertMessage');
+            alertMessage.textContent = message;
+            alertMessage.classList.add('alert-error');
+            alertMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Load remembered email
+        const rememberedEmail = localStorage.getItem('remember_email');
+        if (rememberedEmail) {
+            document.getElementById('email').value = rememberedEmail;
+            document.getElementById('rememberMe').checked = true;
+        }
+
+        // Enter key to submit
+        document.getElementById('password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
+    </script>
+</body>
+</html>
