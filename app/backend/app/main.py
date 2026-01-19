@@ -131,7 +131,7 @@ async def startup_event():
         
         # Mount static files (frontend)
         try:
-            frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "frontend")
+            frontend_path = "/app/frontend"
             if os.path.exists(frontend_path):
                 app.mount("/static", StaticFiles(directory=frontend_path), name="static")
                 logger.info(f"✓ Frontend static files mounted from {frontend_path}")
@@ -152,25 +152,14 @@ async def startup_event():
 async def read_root():
     """Root endpoint - serves the login page."""
     try:
-        # Get the absolute path to the frontend directory
-        # app/backend/app/main.py is at: /app/app/main.py in container
-        # frontend is at: /app/frontend in container
-        app_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        frontend_path = os.path.join(app_root, "frontend", "login.html")
-        
-        logger.info(f"App root: {app_root}")
-        logger.info(f"Looking for login.html at: {frontend_path}")
-        logger.info(f"File exists: {os.path.exists(frontend_path)}")
+        # Frontend is at /app/frontend in the container (hardcoded path)
+        frontend_path = "/app/frontend/login.html"
         
         if os.path.exists(frontend_path):
             logger.info(f"✓ Serving login.html from {frontend_path}")
             return FileResponse(frontend_path, media_type="text/html")
         else:
             logger.error(f"✗ login.html not found at {frontend_path}")
-            # List what's in the frontend directory
-            frontend_dir = os.path.join(app_root, "frontend")
-            if os.path.exists(frontend_dir):
-                logger.info(f"Contents of {frontend_dir}: {os.listdir(frontend_dir)[:10]}")
     except Exception as e:
         logger.error(f"Error serving login.html: {e}", exc_info=True)
     
@@ -205,9 +194,8 @@ def health_check():
 async def login_page():
     """Serve login page."""
     try:
-        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "frontend", "login.html")
-        if os.path.exists(frontend_path):
-            return FileResponse(frontend_path, media_type="text/html")
+        if os.path.exists("/app/frontend/login.html"):
+            return FileResponse("/app/frontend/login.html", media_type="text/html")
     except Exception as e:
         logger.warning(f"Could not serve login.html: {e}")
     return {"error": "Login page not found"}
@@ -217,9 +205,8 @@ async def login_page():
 async def dashboard_page():
     """Serve dashboard page."""
     try:
-        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "frontend", "dashboard.html")
-        if os.path.exists(frontend_path):
-            return FileResponse(frontend_path, media_type="text/html")
+        if os.path.exists("/app/frontend/dashboard.html"):
+            return FileResponse("/app/frontend/dashboard.html", media_type="text/html")
     except Exception as e:
         logger.warning(f"Could not serve dashboard.html: {e}")
     return {"error": "Dashboard page not found"}
@@ -229,9 +216,8 @@ async def dashboard_page():
 async def admin_page():
     """Serve admin page."""
     try:
-        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "frontend", "admin.html")
-        if os.path.exists(frontend_path):
-            return FileResponse(frontend_path, media_type="text/html")
+        if os.path.exists("/app/frontend/admin.html"):
+            return FileResponse("/app/frontend/admin.html", media_type="text/html")
     except Exception as e:
         logger.warning(f"Could not serve admin.html: {e}")
     return {"error": "Admin page not found"}
@@ -241,9 +227,8 @@ async def admin_page():
 async def orders_page():
     """Serve orders page."""
     try:
-        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "frontend", "order-list.html")
-        if os.path.exists(frontend_path):
-            return FileResponse(frontend_path, media_type="text/html")
+        if os.path.exists("/app/frontend/order-list.html"):
+            return FileResponse("/app/frontend/order-list.html", media_type="text/html")
     except Exception as e:
         logger.warning(f"Could not serve order-list.html: {e}")
     return {"error": "Orders page not found"}
@@ -253,9 +238,8 @@ async def orders_page():
 async def maintenance_page():
     """Serve maintenance page."""
     try:
-        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "frontend", "maintenance.html")
-        if os.path.exists(frontend_path):
-            return FileResponse(frontend_path, media_type="text/html")
+        if os.path.exists("/app/frontend/maintenance.html"):
+            return FileResponse("/app/frontend/maintenance.html", media_type="text/html")
     except Exception as e:
         logger.warning(f"Could not serve maintenance.html: {e}")
     return {"error": "Maintenance page not found"}
