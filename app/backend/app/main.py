@@ -32,7 +32,7 @@ async def startup_event():
     try:
         # Import and initialize database with retries
         from app.db.database import Base, engine
-        from sqlalchemy import text
+        from sqlalchemy import text, inspect
         
         logger.info("Creating database tables...")
         max_retries = 3
@@ -43,7 +43,18 @@ async def startup_event():
                     conn.execute(text("SELECT 1"))
                     logger.info("Database connection successful")
                 
-                # Create tables
+                # Check if we need to recreate tables due to schema mismatch
+                inspector = inspect(engine)
+                existing_tables = set(inspector.get_table_names())
+                expected_tables = set(Base.metadata.tables.keys())
+                
+                # If some tables exist but might have schema issues, 
+                # drop and recreate for safety on first deployment
+                if existing_tables and not expected_tables.issubset(existing_tables):
+                    logger.warning("Schema mismatch detected, recreating tables...")
+                    Base.metadata.drop_all(bind=engine)
+                
+                # Create/update tables
                 Base.metadata.create_all(bind=engine)
                 logger.info("Database tables created successfully")
                 break
