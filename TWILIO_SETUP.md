@@ -2,8 +2,8 @@
 
 ## Account Details
 
-**Account SID:** `AC21e03f1ff3792a2fe49435744505c53e`  
-**Auth Token:** `0d2692d716bc761af953a161492d2886`  
+**Account SID:** `[Your Account SID - see .env file]`  
+**Auth Token:** `[Your Auth Token - see .env file]`  
 **Twilio WhatsApp Sandbox Number:** `whatsapp:+14155552671`
 
 ## Configuration Files Updated
@@ -12,8 +12,9 @@
 Added the following Twilio credentials to the backend `.env` file:
 
 ```properties
-TWILIO_ACCOUNT_SID=AC21e03f1ff3792a2fe49435744505c53e
-TWILIO_AUTH_TOKEN=0d2692d716bc761af953a161492d2886
+# Get these values from your Twilio Console
+TWILIO_ACCOUNT_SID=your_account_sid_here
+TWILIO_AUTH_TOKEN=your_auth_token_here
 TWILIO_WHATSAPP_NUMBER=whatsapp:+14155552671
 TWILIO_WEBHOOK_VERIFY_TOKEN=BarronPMSWebhookToken2024
 ```
@@ -22,8 +23,8 @@ TWILIO_WEBHOOK_VERIFY_TOKEN=BarronPMSWebhookToken2024
 Updated Pydantic Settings class to include Twilio configuration:
 
 ```python
-TWILIO_ACCOUNT_SID: str = "AC21e03f1ff3792a2fe49435744505c53e"
-TWILIO_AUTH_TOKEN: str = "0d2692d716bc761af953a161492d2886"
+TWILIO_ACCOUNT_SID: str = "your_account_sid_here"
+TWILIO_AUTH_TOKEN: str = "your_auth_token_here"
 TWILIO_WHATSAPP_NUMBER: str = "whatsapp:+14155552671"
 TWILIO_WEBHOOK_VERIFY_TOKEN: str = "BarronPMSWebhookToken2024"
 ```

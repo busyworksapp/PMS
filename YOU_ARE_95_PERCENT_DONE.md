@@ -158,7 +158,7 @@ Your Phone          Twilio Sandbox       Your Backend      Database
 
 Stored in `.env` file (never committed to Git):
 ```properties
-TWILIO_ACCOUNT_SID=AC21e03f1ff3792a2fe49435744505c53e
+TWILIO_ACCOUNT_SID=your_account_sid_here
 TWILIO_AUTH_TOKEN=0d2692d716bc761af953a161492d2886
 TWILIO_WHATSAPP_NUMBER=whatsapp:+14155552671
 TWILIO_WEBHOOK_VERIFY_TOKEN=BarronPMSWebhookToken2024

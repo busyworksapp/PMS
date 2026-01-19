@@ -185,14 +185,14 @@ Webhook signature verification might be failing. The application auto-verifies, 
 
 ### `.env` (Already Configured)
 ```properties
-TWILIO_ACCOUNT_SID=AC21e03f1ff3792a2fe49435744505c53e
-TWILIO_AUTH_TOKEN=0d2692d716bc761af953a161492d2886
+TWILIO_ACCOUNT_SID=your_account_sid_here
+TWILIO_AUTH_TOKEN=your_auth_token_here
 TWILIO_WHATSAPP_NUMBER=whatsapp:+14155552671
 TWILIO_WEBHOOK_VERIFY_TOKEN=BarronPMSWebhookToken2024
 ```
 
 ### Twilio Console Settings
-- **Account SID:** AC21e03f1ff3792a2fe49435744505c53e
+- **Account SID:** [See .env file]
 - **Sandbox Number:** +1 415-523-8886
 - **Webhook URL:** `https://your-ngrok-url/api/whatsapp/twilio-webhook`
 - **HTTP Method:** POST

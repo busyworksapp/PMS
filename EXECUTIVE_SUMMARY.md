@@ -97,8 +97,8 @@ curl -X POST http://localhost:8000/api/whatsapp/send \
 ## Credentials
 
 ```
-Account SID:     AC21e03f1ff3792a2fe49435744505c53e
-Auth Token:      0d2692d716bc761af953a161492d2886
+Account SID:     [See .env file]
+Auth Token:      [See .env file]
 WhatsApp Number: whatsapp:+14155552671
 ```
 

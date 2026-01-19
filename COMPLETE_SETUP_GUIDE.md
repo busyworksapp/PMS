@@ -421,7 +421,7 @@ When ready for production:
 
 | Item | Value |
 |------|-------|
-| **Twilio Account SID** | AC21e03f1ff3792a2fe49435744505c53e |
+| **Twilio Account SID** | [See .env file] |
 | **Twilio Auth Token** | 0d2692d716bc761af953a161492d2886 |
 | **Sandbox Number** | +1 415-523-8886 |
 | **Webhook Endpoint** | /api/whatsapp/twilio-webhook |
