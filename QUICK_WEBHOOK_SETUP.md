@@ -38,8 +38,8 @@ Send WhatsApp message to: **+1 415-523-8886**
 | Item | Value |
 |------|-------|
 | **Account SID** | [See .env file] |
-| **Auth Token** | 0d2692d716bc761af953a161492d2886 |
-| **Sandbox Number** | +1 415-523-8886 |
+| **Auth Token** | [See .env file] |
+| **Sandbox Number** | [Provided by Twilio] |
 | **Webhook Endpoint** | `/api/whatsapp/twilio-webhook` |
 
 ---
