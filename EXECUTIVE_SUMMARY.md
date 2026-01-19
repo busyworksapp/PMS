@@ -99,7 +99,7 @@ curl -X POST http://localhost:8000/api/whatsapp/send \
 ```
 Account SID:     [See .env file]
 Auth Token:      [See .env file]
-WhatsApp Number: whatsapp:+14155552671
+WhatsApp Number: [From Twilio]
 ```
 
 Stored securely in `.env` file - Never commit to repository!

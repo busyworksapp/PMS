@@ -65,7 +65,7 @@ curl http://localhost:8000/api/whatsapp/health
 ```properties
 TWILIO_ACCOUNT_SID=your_account_sid_here
 TWILIO_AUTH_TOKEN=your_auth_token_here
-TWILIO_WHATSAPP_NUMBER=whatsapp:+14155552671
+TWILIO_WHATSAPP_NUMBER=whatsapp:[your_sandbox_number]
 TWILIO_WEBHOOK_VERIFY_TOKEN=BarronPMSWebhookToken2024
 ```
 
@@ -73,7 +73,7 @@ TWILIO_WEBHOOK_VERIFY_TOKEN=BarronPMSWebhookToken2024
 ```python
 TWILIO_ACCOUNT_SID: str = "your_account_sid_here"
 TWILIO_AUTH_TOKEN: str = "your_auth_token_here"
-TWILIO_WHATSAPP_NUMBER: str = "whatsapp:+14155552671"
+TWILIO_WHATSAPP_NUMBER: str = "whatsapp:[your_sandbox_number]"
 TWILIO_WEBHOOK_VERIFY_TOKEN: str = "BarronPMSWebhookToken2024"
 ```
 
