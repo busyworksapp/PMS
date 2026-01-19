@@ -57,10 +57,17 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 def login(credentials: UserLogin, db: Session = Depends(get_db)):
-    """Login with username and password."""
-    user = db.query(User).filter(
-        User.username == credentials.username
-    ).first()
+    """Login with username/email and password."""
+    # Support both username and email login
+    user = None
+    if credentials.username:
+        user = db.query(User).filter(
+            User.username == credentials.username
+        ).first()
+    elif credentials.email:
+        user = db.query(User).filter(
+            User.email == credentials.email
+        ).first()
     
     if not user or not verify_password(
         credentials.password,
