@@ -45,12 +45,14 @@ class WhatsAppMessage(Base):
     media_url = Column(String(500), nullable=True)
     media_type = Column(String(50), nullable=True)
     status = Column(String(20), default=MessageStatusEnum.PENDING, index=True)
-    direction = Column(String(10), nullable=False)  # 'inbound' or 'outbound'
+    direction = Column(String(10), nullable=False)
     is_read = Column(Boolean, default=False)
     error_message = Column(Text, nullable=True)
-    metadata = Column(JSON, nullable=True)
+    custom_metadata = Column(JSON, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = Column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
     sent_at = Column(DateTime, nullable=True)
     delivered_at = Column(DateTime, nullable=True)
     read_at = Column(DateTime, nullable=True)
@@ -75,10 +77,12 @@ class WhatsAppContact(Base):
     last_message_time = Column(DateTime, nullable=True)
     unread_count = Column(Integer, default=0)
     conversation_closed = Column(Boolean, default=False)
-    tags = Column(JSON, nullable=True)  # ['urgent', 'vip', 'support', etc.]
-    metadata = Column(JSON, nullable=True)
+    tags = Column(JSON, nullable=True)
+    custom_metadata = Column(JSON, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = Column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
 
 
 class WhatsAppWebhook(Base):

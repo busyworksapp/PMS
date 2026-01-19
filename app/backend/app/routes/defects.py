@@ -10,7 +10,7 @@ from datetime import datetime
 from typing import List, Optional
 from app.db.database import get_db
 from app.models.defect import InternalReject, CustomerReturn
-from app.models.job_planning import Order
+from app.models.order import Order
 from app.models.product import Product
 from app.models.department import Department
 from app.models.user import User

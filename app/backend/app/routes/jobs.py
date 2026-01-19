@@ -13,9 +13,10 @@ from io import BytesIO
 import csv
 
 from app.db.database import get_db
-from app.models.job_planning import Order, OrderItem, OrderSchedule, ProductionStage
-from app.models.product import Product
-from app.models.department import Department, DepartmentCapacity
+from app.models.order import Order, OrderItem, OrderSchedule
+from app.models.product import Product, ProductionStage
+from app.models.department import Department
+from app.models.job_planning import CapacityTarget
 from app.models.machine import Machine
 from app.models.user import User
 from app.core.security import get_current_user
@@ -308,11 +309,11 @@ async def check_capacity(
         department = order.department
         
         # Get capacity targets for date range
-        capacity_data = db.query(DepartmentCapacity).filter(
+        capacity_data = db.query(CapacityTarget).filter(
             and_(
-                DepartmentCapacity.department_id == department.id,
-                DepartmentCapacity.capacity_date >= order.start_date,
-                DepartmentCapacity.capacity_date <= order.end_date
+                CapacityTarget.department_id == department.id,
+                CapacityTarget.period_date >= order.start_date,
+                CapacityTarget.period_date <= order.end_date
             )
         ).all()
         
@@ -582,7 +583,6 @@ async def reallocate_on_hold_order(
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error re-allocating order: {str(e)}")
-    }
 
 
 @router.post("/orders/{order_id}/items")

@@ -3,7 +3,7 @@ from typing import Optional
 import jwt
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthCredentials
+from fastapi.security import HTTPBearer
 from app.core.config import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -50,7 +50,7 @@ def decode_token(token: str) -> dict:
         return None
 
 
-def get_current_user(credentials: HTTPAuthCredentials = Depends(security)):
+def get_current_user(credentials = Depends(security)):
     """
     Get current authenticated user from JWT token.
     This is used as a dependency in route handlers.

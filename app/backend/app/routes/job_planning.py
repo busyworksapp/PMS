@@ -9,13 +9,8 @@ from sqlalchemy import desc
 from datetime import datetime
 from typing import Optional
 from app.db.database import get_db
-from app.models.job_planning import (
-    Order,
-    OrderItem,
-    OrderSchedule,
-    ProductionStage,
-    OrderStatusEnum
-)
+from app.models.order import Order, OrderItem, OrderSchedule, OrderStatusEnum
+from app.models.product import ProductionStage
 from app.models.user import User
 from app.core.security import get_current_user
 

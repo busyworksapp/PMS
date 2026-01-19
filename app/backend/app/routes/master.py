@@ -8,8 +8,8 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from typing import Optional
 from app.db.database import get_db
-from app.models.department import Department, ProductionStage
-from app.models.product import Product
+from app.models.department import Department
+from app.models.product import Product, ProductionStage
 from app.models.machine import Machine
 from app.models.user import User
 from app.core.security import get_current_user

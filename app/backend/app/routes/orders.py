@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from typing import Optional
 from app.db.database import get_db
-from app.models.job_planning import Order, OrderItem, OrderSchedule
+from app.models.order import Order, OrderItem, OrderSchedule
 from app.models.user import User
 from app.core.security import get_current_user
 

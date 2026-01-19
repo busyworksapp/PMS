@@ -2,15 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 
-def create_app():
-    """Initialize database tables on demand."""
-    from app.db.database import Base, engine
-    
-    # Create tables
-    Base.metadata.create_all(bind=engine)
-
-
-# Create app first to minimize SQLAlchemy load issues
+# Create app first to avoid circular imports
 app = FastAPI(
     title="Barron Production Management System",
     description="Complete production management solution",
@@ -26,23 +18,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Import models and routes after app creation
+from app.db.database import Base, engine
+from app.routes import auth, master, orders, defects
+from app.routes import maintenance, sop_ncr, jobs, whatsapp
+from app.routes import job_planning, finance
 
-def register_routes():
-    """Register routes after app is initialized."""
-    from app.routes import auth, master, orders, defects
-    from app.routes import maintenance, sop_ncr, jobs, whatsapp
-    from app.routes import job_planning, finance
-    
-    app.include_router(auth.router)
-    app.include_router(master.router)
-    app.include_router(orders.router)
-    app.include_router(jobs.router)
-    app.include_router(job_planning.router)
-    app.include_router(defects.router)
-    app.include_router(maintenance.router)
-    app.include_router(sop_ncr.router)
-    app.include_router(finance.router)
-    app.include_router(whatsapp.router)
+# Initialize database tables
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as e:
+    print(f"Database initialization warning: {e}")
+
+# Register all routers
+app.include_router(auth.router)
+app.include_router(master.router)
+app.include_router(orders.router)
+app.include_router(jobs.router)
+app.include_router(job_planning.router)
+app.include_router(defects.router)
+app.include_router(maintenance.router)
+app.include_router(sop_ncr.router)
+app.include_router(finance.router)
+app.include_router(whatsapp.router)
 
 
 @app.get("/")
@@ -58,13 +56,3 @@ def read_root():
 def health_check():
     """Health check endpoint."""
     return {"status": "ok"}
-
-
-@app.on_event("startup")
-async def startup_event():
-    """Initialize routes on startup (database initialization is deferred)."""
-    try:
-        register_routes()
-    except Exception:
-        # Routes already registered, ignore on reload
-        pass
