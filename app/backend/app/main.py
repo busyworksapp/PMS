@@ -136,10 +136,23 @@ async def startup_event():
 
 @app.get("/")
 def read_root():
-    """Root endpoint."""
+    """Root endpoint - returns API information."""
     return {
         "message": "Barron Production Management System",
+        "version": "1.0.0",
+        "status": "operational",
         "api_docs": "/docs",
+        "health_check": "/health",
+        "endpoints": {
+            "authentication": "/api/auth/register",
+            "whatsapp": "/api/whatsapp/send",
+            "orders": "/api/orders",
+            "masters": "/api/master",
+            "defects": "/api/defects",
+            "maintenance": "/api/maintenance",
+            "jobs": "/api/jobs",
+            "finance": "/api/finance"
+        }
     }
 
 
