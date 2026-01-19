@@ -17,6 +17,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend code
 COPY app/backend/app ./app
 
+# Copy frontend files (HTML, CSS, JS)
+COPY app/frontend ./frontend
+
 # Copy entrypoint script
 COPY entrypoint.py ./entrypoint.py
 
