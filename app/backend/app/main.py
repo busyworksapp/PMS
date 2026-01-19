@@ -152,17 +152,27 @@ async def startup_event():
 async def read_root():
     """Root endpoint - serves the login page."""
     try:
-        # Try to serve the login HTML
-        # Path: /app/app/main.py -> /app/frontend/login.html
-        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "frontend", "login.html")
+        # Get the absolute path to the frontend directory
+        # app/backend/app/main.py is at: /app/app/main.py in container
+        # frontend is at: /app/frontend in container
+        app_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        frontend_path = os.path.join(app_root, "frontend", "login.html")
+        
+        logger.info(f"App root: {app_root}")
         logger.info(f"Looking for login.html at: {frontend_path}")
+        logger.info(f"File exists: {os.path.exists(frontend_path)}")
+        
         if os.path.exists(frontend_path):
-            logger.info(f"Found login.html, serving it")
+            logger.info(f"✓ Serving login.html from {frontend_path}")
             return FileResponse(frontend_path, media_type="text/html")
         else:
-            logger.warning(f"login.html not found at: {frontend_path}")
+            logger.error(f"✗ login.html not found at {frontend_path}")
+            # List what's in the frontend directory
+            frontend_dir = os.path.join(app_root, "frontend")
+            if os.path.exists(frontend_dir):
+                logger.info(f"Contents of {frontend_dir}: {os.listdir(frontend_dir)[:10]}")
     except Exception as e:
-        logger.warning(f"Could not serve login.html: {e}", exc_info=True)
+        logger.error(f"Error serving login.html: {e}", exc_info=True)
     
     # Fallback to API info
     return {
