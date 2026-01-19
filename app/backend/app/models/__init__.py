@@ -9,6 +9,14 @@ from app.models.sop_ncr import SOPFailureTicket, NonConformanceReport
 from app.models.bom import BOM, BOMComponent
 from app.models.form_config import DynamicForm, FormField
 from app.models.audit import AuditLog
+from app.models.job_planning import (
+    Order,
+    OrderItem,
+    OrderSchedule,
+    ProductionStage,
+    ProductionException
+)
+from app.models.job_allocation import JobAllocation, JobProgressLog
 
 __all__ = [
     "User",
@@ -29,4 +37,7 @@ __all__ = [
     "DynamicForm",
     "FormField",
     "AuditLog",
+    "ProductionException",
+    "JobAllocation",
+    "JobProgressLog",
 ]

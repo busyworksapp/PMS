@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Analytics - Barron PMS</title>
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0d0d0d;
+            color: #e0e0e0;
+        }
+
+        .reports-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #1a1a1a;
+            border-right: 1px solid #333;
+            padding: 24px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            padding: 0 24px 32px;
+            border-bottom: 1px solid #333;
+            font-size: 20px;
+            font-weight: 700;
+            color: #ff6b35;
+        }
+
+        .nav-item {
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: #252525;
+            color: #ff6b35;
+            border-left-color: #ff6b35;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        .header {
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .filters-section {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #aaa;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 10px 12px;
+            background: #252525;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-size: 14px;
+        }
+
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .report-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .report-card:hover {
+            border-color: #ff6b35;
+            box-shadow: 0 0 16px rgba(255, 107, 53, 0.1);
+        }
+
+        .report-card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .report-card-desc {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 16px;
+        }
+
+        .generate-btn {
+            padding: 8px 16px;
+            background: #ff6b35;
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .generate-btn:hover {
+            background: #ff8551;
+        }
+
+        .chart-container {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .metric {
+            background: #252525;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ff6b35;
+            margin-bottom: 8px;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .export-btn {
+            padding: 10px 24px;
+            background: transparent;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .export-btn:hover {
+            border-color: #ff6b35;
+            color: #ff6b35;
+        }
+
+        .table-container {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 24px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #252525;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid #333;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #333;
+        }
+
+        tr:hover {
+            background: #252525;
+        }
+    </style>
+</head>
+<body>
+    <div class="reports-container">
+        <div class="sidebar">
+            <div class="sidebar-logo">📊 Reports</div>
+            <div class="nav-item active" onclick="scrollToReport('production')">📈 Production</div>
+            <div class="nav-item" onclick="scrollToReport('defects')">⚠️ Defects</div>
+            <div class="nav-item" onclick="scrollToReport('maintenance')">🔧 Maintenance</div>
+            <div class="nav-item" onclick="scrollToReport('finance')">💰 Finance</div>
+            <div class="nav-item" onclick="scrollToReport('sop')">📋 SOP/NCR</div>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <div class="page-title">Reports & Analytics</div>
+                <p style="color: #888; margin-top: 8px;">Generate comprehensive reports across all modules</p>
+            </div>
+
+            <div class="filters-section">
+                <div class="filter-group">
+                    <label>Date Range</label>
+                    <input type="date" id="startDate">
+                </div>
+                <div class="filter-group">
+                    <label>End Date</label>
+                    <input type="date" id="endDate">
+                </div>
+                <div class="filter-group">
+                    <label>Department</label>
+                    <select id="departmentFilter">
+                        <option value="">All Departments</option>
+                    </select>
+                </div>
+                <div class="filter-group" style="align-self: flex-end;">
+                    <button class="generate-btn" onclick="applyFilters()">Apply Filters</button>
+                </div>
+            </div>
+
+            <!-- Production Reports -->
+            <div id="production">
+                <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 24px;">Production Reports</h2>
+                <div class="reports-grid">
+                    <div class="report-card" onclick="generateReport('production-summary')">
+                        <div class="report-card-title">Production Summary</div>
+                        <div class="report-card-desc">Overall production metrics and progress</div>
+                        <button class="generate-btn">Generate</button>
+                    </div>
+                    <div class="report-card" onclick="generateReport('order-status')">
+                        <div class="report-card-title">Order Status Report</div>
+                        <div class="report-card-desc">Current status of all orders</div>
+                        <button class="generate-btn">Generate</button>
+                    </div>
+                    <div class="report-card" onclick="generateReport('capacity-utilization')">
+                        <div class="report-card-title">Capacity Utilization</div>
+                        <div class="report-card-desc">Machine and department utilization rates</div>
+                        <button class="generate-btn">Generate</button>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Production KPIs</div>
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <div class="metric-value" id="total-orders">--</div>
+                            <div class="metric-label">Total Orders</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="completed-orders">--</div>
+                            <div class="metric-label">Completed Orders</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="completion-rate">--</div>
+                            <div class="metric-label">Completion Rate</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="overdue-orders">--</div>
+                            <div class="metric-label">Overdue Orders</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Defects Reports -->
+            <div id="defects" style="margin-top: 48px;">
+                <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 24px;">Defects Reports</h2>
+                <div class="reports-grid">
+                    <div class="report-card" onclick="generateReport('defects-summary')">
+                        <div class="report-card-title">Defects Summary</div>
+                        <div class="report-card-desc">Internal rejects and returns analysis</div>
+                        <button class="generate-btn">Generate</button>
+                    </div>
+                    <div class="report-card" onclick="generateReport('defect-trends')">
+                        <div class="report-card-title">Defect Trends</div>
+                        <div class="report-card-desc">Historical patterns and trends</div>
+                        <button class="generate-btn">Generate</button>
+                    </div>
+                    <div class="report-card" onclick="generateReport('rejection-analysis')">
+                        <div class="report-card-title">Rejection Analysis</div>
+                        <div class="report-card-desc">Root causes and departments</div>
+                        <button class="generate-btn">Generate</button>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Defects KPIs</div>
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <div class="metric-value" id="total-rejects">--</div>
+                            <div class="metric-label">Total Rejects</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="pending-rejects">--</div>
+                            <div class="metric-label">Pending Approval</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="customer-returns">--</div>
+                            <div class="metric-label">Customer Returns</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="approval-rate">--</div>
+                            <div class="metric-label">Approval Rate</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Maintenance Reports -->
+            <div id="maintenance" style="margin-top: 48px;">
+                <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 24px;">Maintenance Reports</h2>
+                <div class="reports-grid">
+                    <div class="report-card" onclick="generateReport('maintenance-summary')">
+                        <div class="report-card-title">Maintenance Summary</div>
+                        <div class="report-card-desc">Overall maintenance metrics</div>
+                        <button class="generate-btn">Generate</button>
+                    </div>
+                    <div class="report-card" onclick="generateReport('sla-performance')">
+                        <div class="report-card-title">SLA Performance</div>
+                        <div class="report-card-desc">Response and completion SLA metrics</div>
+                        <button class="generate-btn">Generate</button>
+                    </div>
+                    <div class="report-card" onclick="generateReport('machine-availability')">
+                        <div class="report-card-title">Machine Availability</div>
+                        <div class="report-card-desc">Uptime and downtime analysis</div>
+                        <button class="generate-btn">Generate</button>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Maintenance KPIs</div>
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <div class="metric-value" id="total-tickets">--</div>
+                            <div class="metric-label">Total Tickets</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="avg-resolution">--</div>
+                            <div class="metric-label">Avg Resolution (hrs)</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="sla-breach">--</div>
+                            <div class="metric-label">SLA Breach Rate</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="critical-tickets">--</div>
+                            <div class="metric-label">Critical Tickets</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Finance Reports -->
+            <div id="finance" style="margin-top: 48px;">
+                <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 24px;">Finance Reports</h2>
+                <div class="reports-grid">
+                    <div class="report-card" onclick="generateReport('bom-costing')">
+                        <div class="report-card-title">BOM Costing Analysis</div>
+                        <div class="report-card-desc">Cost per product and variations</div>
+                        <button class="generate-btn">Generate</button>
+                    </div>
+                    <div class="report-card" onclick="generateReport('cost-variance')">
+                        <div class="report-card-title">Cost Variance Report</div>
+                        <div class="report-card-desc">Planned vs actual costs</div>
+                        <button class="generate-btn">Generate</button>
+                    </div>
+                    <div class="report-card" onclick="generateReport('financial-summary')">
+                        <div class="report-card-title">Financial Summary</div>
+                        <div class="report-card-desc">Overall financial metrics</div>
+                        <button class="generate-btn">Generate</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOP/NCR Reports -->
+            <div id="sop" style="margin-top: 48px;">
+                <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 24px;">SOP/NCR Reports</h2>
+                <div class="reports-grid">
+                    <div class="report-card" onclick="generateReport('sop-summary')">
+                        <div class="report-card-title">SOP Failure Summary</div>
+                        <div class="report-card-desc">SOP failure incidents</div>
+                        <button class="generate-btn">Generate</button>
+                    </div>
+                    <div class="report-card" onclick="generateReport('ncr-effectiveness')">
+                        <div class="report-card-title">NCR Effectiveness</div>
+                        <div class="report-card-desc">Corrective action effectiveness</div>
+                        <button class="generate-btn">Generate</button>
+                    </div>
+                    <div class="report-card" onclick="generateReport('escalation-analysis')">
+                        <div class="report-card-title">Escalation Analysis</div>
+                        <div class="report-card-desc">HOD decisions and patterns</div>
+                        <button class="generate-btn">Generate</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="export-buttons">
+                <button class="export-btn" onclick="exportPDF()">📄 Export as PDF</button>
+                <button class="export-btn" onclick="exportExcel()">📊 Export as Excel</button>
+                <button class="export-btn" onclick="printReport()">🖨️ Print Report</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load dashboard data on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadDashboards();
+        });
+
+        async function loadDashboards() {
+            try {
+                // Load production KPIs
+                const prodResponse = await fetch('/api/job-planning/dashboard');
+                const prodData = await prodResponse.json();
+                if (prodData.summary) {
+                    document.getElementById('total-orders').textContent = prodData.summary.total_orders;
+                    document.getElementById('completed-orders').textContent = prodData.summary.completed_orders;
+                    document.getElementById('completion-rate').textContent = prodData.summary.completion_rate + '%';
+                    document.getElementById('overdue-orders').textContent = prodData.summary.overdue_orders;
+                }
+
+                // Load defects KPIs
+                const defectsResponse = await fetch('/api/defects/dashboard');
+                const defectsData = await defectsResponse.json();
+                if (defectsData.internal_rejects) {
+                    document.getElementById('total-rejects').textContent = defectsData.internal_rejects.total;
+                    document.getElementById('pending-rejects').textContent = defectsData.internal_rejects.pending;
+                    document.getElementById('approval-rate').textContent = defectsData.internal_rejects.pending_rate + '%';
+                }
+                if (defectsData.customer_returns) {
+                    document.getElementById('customer-returns').textContent = defectsData.customer_returns.total;
+                }
+
+                // Load maintenance KPIs
+                const maintResponse = await fetch('/api/maintenance/dashboard');
+                const maintData = await maintResponse.json();
+                if (maintData.summary) {
+                    document.getElementById('total-tickets').textContent = maintData.summary.total_tickets;
+                    document.getElementById('critical-tickets').textContent = maintData.summary.critical_tickets;
+                    document.getElementById('avg-resolution').textContent = maintData.metrics.average_resolution_hours;
+                }
+
+                // Load SOP KPIs
+                const sopResponse = await fetch('/api/sop-ncr/dashboard');
+                const sopData = await sopResponse.json();
+                if (sopData.tickets) {
+                    // Display additional SOP data if needed
+                }
+            } catch (error) {
+                console.error('Error loading dashboards:', error);
+            }
+        }
+
+        function scrollToReport(section) {
+            const element = document.getElementById(section);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function generateReport(reportType) {
+            alert(`Generating ${reportType} report...`);
+            // Integration with backend report generation would go here
+        }
+
+        function applyFilters() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            alert(`Filters applied: ${startDate} to ${endDate}`);
+            // Apply filters would call APIs here
+        }
+
+        function exportPDF() {
+            alert('Exporting as PDF...');
+            // PDF export functionality
+        }
+
+        function exportExcel() {
+            alert('Exporting as Excel...');
+            // Excel export functionality
+        }
+
+        function printReport() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

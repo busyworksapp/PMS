@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Data Management - Barron PMS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0d0d0d;
+            color: #e0e0e0;
+        }
+
+        .master-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #1a1a1a;
+            border-right: 1px solid #333;
+            padding: 24px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            padding: 0 24px 32px;
+            border-bottom: 1px solid #333;
+            font-size: 20px;
+            font-weight: 700;
+            color: #ff6b35;
+        }
+
+        .nav-section {
+            margin-top: 24px;
+        }
+
+        .nav-section-title {
+            padding: 12px 24px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #666;
+        }
+
+        .nav-item {
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: #252525;
+            color: #ff6b35;
+            border-left-color: #ff6b35;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .master-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .master-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .master-card:hover {
+            border-color: #ff6b35;
+            box-shadow: 0 0 16px rgba(255, 107, 53, 0.1);
+        }
+
+        .master-icon {
+            font-size: 32px;
+        }
+
+        .master-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .master-count {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ff6b35;
+        }
+
+        .master-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            padding: 10px 24px;
+            background: #ff6b35;
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #ff8551;
+        }
+
+        .table-container {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 24px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #252525;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid #333;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #333;
+        }
+
+        tr:hover {
+            background: #252525;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid #333;
+            border-radius: 4px;
+            color: #aaa;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            margin-right: 8px;
+        }
+
+        .action-btn:hover {
+            border-color: #ff6b35;
+            color: #ff6b35;
+        }
+
+        .form-container {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 24px;
+            max-width: 600px;
+            margin-top: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #aaa;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            background: #252525;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .section {
+            margin-bottom: 48px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .filters {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #aaa;
+        }
+
+        .filter-group input {
+            padding: 10px 12px;
+            background: #252525;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: #e0e0e0;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid #4caf50;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4caf50;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid #333;
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            color: #aaa;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            border-bottom-color: #ff6b35;
+            color: #ff6b35;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="master-container">
+        <div class="sidebar">
+            <div class="sidebar-logo">📋 Master Data</div>
+            <div class="nav-section">
+                <div class="nav-section-title">Configuration</div>
+                <div class="nav-item active" onclick="switchSection('products')">Products</div>
+                <div class="nav-item" onclick="switchSection('departments')">Departments</div>
+                <div class="nav-item" onclick="switchSection('machines')">Machines</div>
+                <div class="nav-item" onclick="switchSection('stages')">Production Stages</div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Workflows</div>
+                <div class="nav-item" onclick="switchSection('forms')">Dynamic Forms</div>
+                <div class="nav-item" onclick="switchSection('workflows')">Workflows</div>
+                <div class="nav-item" onclick="switchSection('sla')">SLA Rules</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="page-header">
+                <div>
+                    <div class="page-title">Master Data Management</div>
+                    <p style="color: #888; margin-top: 8px;">Configure core system data</p>
+                </div>
+                <button class="btn-primary" id="addNewBtn" style="display:none;">+ Add New</button>
+            </div>
+
+            <!-- Products Section -->
+            <div id="products-section" class="section">
+                <div class="section-title">Products</div>
+                <button class="btn-primary" onclick="showProductForm()">+ Add Product</button>
+                <div class="table-container" style="margin-top:24px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTable">
+                            <!-- Dynamically populated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Departments Section -->
+            <div id="departments-section" class="section hidden">
+                <div class="section-title">Departments</div>
+                <button class="btn-primary" onclick="showDepartmentForm()">+ Add Department</button>
+                <div class="table-container" style="margin-top:24px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Manager</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="departmentsTable">
+                            <!-- Dynamically populated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Machines Section -->
+            <div id="machines-section" class="section hidden">
+                <div class="section-title">Machines</div>
+                <button class="btn-primary" onclick="showMachineForm()">+ Add Machine</button>
+                <div class="table-container" style="margin-top:24px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Department</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="machinesTable">
+                            <!-- Dynamically populated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Production Stages Section -->
+            <div id="stages-section" class="section hidden">
+                <div class="section-title">Production Stages</div>
+                <button class="btn-primary" onclick="showStageForm()">+ Add Stage</button>
+                <div class="table-container" style="margin-top:24px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Department</th>
+                                <th>Duration (min)</th>
+                                <th>Requires Approval</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stagesTable">
+                            <!-- Dynamically populated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Dynamic Forms Section -->
+            <div id="forms-section" class="section hidden">
+                <div class="section-title">Dynamic Forms Configuration</div>
+                <p style="color:#888; margin-bottom:24px;">Configure custom forms for different modules</p>
+                <div class="master-grid" id="formsGrid">
+                    <div class="master-card" onclick="editForm('defect-form')">
+                        <div class="master-icon">📝</div>
+                        <div class="master-title">Defect Report Form</div>
+                        <div class="master-label">Fields for defect reporting</div>
+                    </div>
+                    <div class="master-card" onclick="editForm('maintenance-form')">
+                        <div class="master-icon">🔧</div>
+                        <div class="master-title">Maintenance Form</div>
+                        <div class="master-label">Fields for maintenance tickets</div>
+                    </div>
+                    <div class="master-card" onclick="editForm('sop-form')">
+                        <div class="master-icon">📋</div>
+                        <div class="master-title">SOP Failure Form</div>
+                        <div class="master-label">Fields for SOP tickets</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workflows Section -->
+            <div id="workflows-section" class="section hidden">
+                <div class="section-title">Workflow Configuration</div>
+                <p style="color:#888; margin-bottom:24px;">Define process workflows and approvals</p>
+                <div class="master-grid" id="workflowsGrid">
+                    <div class="master-card" onclick="editWorkflow('order-approval')">
+                        <div class="master-icon">✅</div>
+                        <div class="master-title">Order Approval</div>
+                        <div class="master-label">Order creation workflow</div>
+                    </div>
+                    <div class="master-card" onclick="editWorkflow('defect-approval')">
+                        <div class="master-icon">✅</div>
+                        <div class="master-title">Defect Approval</div>
+                        <div class="master-label">Defect approval workflow</div>
+                    </div>
+                    <div class="master-card" onclick="editWorkflow('escalation')">
+                        <div class="master-icon">⬆️</div>
+                        <div class="master-title">Escalation</div>
+                        <div class="master-label">HOD escalation rules</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLA Rules Section -->
+            <div id="sla-section" class="section hidden">
+                <div class="section-title">SLA Configuration</div>
+                <p style="color:#888; margin-bottom:24px;">Configure Service Level Agreements</p>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ticket Type</th>
+                                <th>Severity</th>
+                                <th>Response Time (hrs)</th>
+                                <th>Resolution Time (hrs)</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="slaTable">
+                            <tr>
+                                <td>Maintenance</td>
+                                <td>Critical</td>
+                                <td>1</td>
+                                <td>4</td>
+                                <td><button class="action-btn">Edit</button></td>
+                            </tr>
+                            <tr>
+                                <td>Maintenance</td>
+                                <td>High</td>
+                                <td>4</td>
+                                <td>8</td>
+                                <td><button class="action-btn">Edit</button></td>
+                            </tr>
+                            <tr>
+                                <td>Defect</td>
+                                <td>High</td>
+                                <td>2</td>
+                                <td>8</td>
+                                <td><button class="action-btn">Edit</button></td>
+                            </tr>
+                            <tr>
+                                <td>SOP Failure</td>
+                                <td>Normal</td>
+                                <td>4</td>
+                                <td>24</td>
+                                <td><button class="action-btn">Edit</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(section + '-section').classList.remove('hidden');
+            event.target.classList.add('active');
+            
+            // Load data for section
+            loadSectionData(section);
+        }
+
+        async function loadSectionData(section) {
+            try {
+                switch(section) {
+                    case 'products':
+                        const prodResponse = await fetch('/api/master/products');
+                        const prodData = await prodResponse.json();
+                        displayProducts(prodData.products || []);
+                        break;
+                    case 'departments':
+                        const deptResponse = await fetch('/api/master/departments');
+                        const deptData = await deptResponse.json();
+                        displayDepartments(deptData.departments || []);
+                        break;
+                    case 'machines':
+                        const machResponse = await fetch('/api/master/machines');
+                        const machData = await machResponse.json();
+                        displayMachines(machData.machines || []);
+                        break;
+                }
+            } catch (error) {
+                console.error('Error loading section data:', error);
+            }
+        }
+
+        function displayProducts(products) {
+            const tbody = document.getElementById('productsTable');
+            tbody.innerHTML = products.map(p => `
+                <tr>
+                    <td>${p.code}</td>
+                    <td>${p.name}</td>
+                    <td>${p.description || '-'}</td>
+                    <td><span class="status-badge">${p.is_active ? 'Active' : 'Inactive'}</span></td>
+                    <td>
+                        <button class="action-btn" onclick="editProduct(${p.id})">Edit</button>
+                        <button class="action-btn" onclick="deleteProduct(${p.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function displayDepartments(depts) {
+            const tbody = document.getElementById('departmentsTable');
+            tbody.innerHTML = depts.map(d => `
+                <tr>
+                    <td>${d.name}</td>
+                    <td>${d.description || '-'}</td>
+                    <td>${d.manager_id || '-'}</td>
+                    <td><span class="status-badge">${d.is_active ? 'Active' : 'Inactive'}</span></td>
+                    <td>
+                        <button class="action-btn" onclick="editDepartment(${d.id})">Edit</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function displayMachines(machines) {
+            const tbody = document.getElementById('machinesTable');
+            tbody.innerHTML = machines.map(m => `
+                <tr>
+                    <td>${m.code}</td>
+                    <td>${m.name}</td>
+                    <td>${m.department_id || '-'}</td>
+                    <td><span class="status-badge">${m.is_operational ? 'Operational' : 'Down'}</span></td>
+                    <td>
+                        <button class="action-btn" onclick="editMachine(${m.id})">Edit</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function showProductForm() {
+            alert('Show product form dialog');
+        }
+
+        function showDepartmentForm() {
+            alert('Show department form dialog');
+        }
+
+        function showMachineForm() {
+            alert('Show machine form dialog');
+        }
+
+        function showStageForm() {
+            alert('Show production stage form dialog');
+        }
+
+        function editForm(formType) {
+            alert(`Edit form: ${formType}`);
+        }
+
+        function editWorkflow(workflowType) {
+            alert(`Edit workflow: ${workflowType}`);
+        }
+
+        function editProduct(id) {
+            alert(`Edit product ${id}`);
+        }
+
+        function deleteProduct(id) {
+            if (confirm('Delete this product?')) {
+                alert(`Product ${id} deleted`);
+            }
+        }
+
+        function editDepartment(id) {
+            alert(`Edit department ${id}`);
+        }
+
+        function editMachine(id) {
+            alert(`Edit machine ${id}`);
+        }
+
+        // Load initial section
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSectionData('products');
+        });
+    </script>
+</body>
+</html>

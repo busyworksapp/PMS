@@ -31,14 +31,17 @@ def register_routes():
     """Register routes after app is initialized."""
     from app.routes import auth, master, orders, defects
     from app.routes import maintenance, sop_ncr, jobs, whatsapp
+    from app.routes import job_planning, finance
     
     app.include_router(auth.router)
     app.include_router(master.router)
     app.include_router(orders.router)
     app.include_router(jobs.router)
+    app.include_router(job_planning.router)
     app.include_router(defects.router)
     app.include_router(maintenance.router)
     app.include_router(sop_ncr.router)
+    app.include_router(finance.router)
     app.include_router(whatsapp.router)
 
 
