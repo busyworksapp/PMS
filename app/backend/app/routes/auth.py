@@ -59,6 +59,12 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 def login(credentials: UserLogin, db: Session = Depends(get_db)):
     """Login with username/email and password."""
     # Support both username and email login
+    if not credentials.username and not credentials.email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username or email required",
+        )
+    
     user = None
     if credentials.username:
         user = db.query(User).filter(
@@ -69,10 +75,13 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
             User.email == credentials.email
         ).first()
     
-    if not user or not verify_password(
-        credentials.password,
-        user.hashed_password,
-    ):
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials",
+        )
+    
+    if not verify_password(credentials.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials",
@@ -90,7 +99,47 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
     return {"access_token": access_token}
 
 
-@router.post("/operator-login", response_model=Token)
+@router.post("/bootstrap-admin", response_model=Token)
+def bootstrap_admin(credentials: UserLogin, db: Session = Depends(get_db)):
+    """
+    Create the first admin user if none exists.
+    This endpoint is only available when no users exist in the database.
+    POST /api/auth/bootstrap-admin
+    """
+    # Check if any users exist
+    user_count = db.query(User).count()
+    if user_count > 0:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin user already exists. Use login endpoint instead.",
+        )
+    
+    if not credentials.email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email required for initial admin user",
+        )
+    
+    # Create the admin user
+    from app.core.security import hash_password
+    
+    admin_user = User(
+        username=credentials.username or "admin",
+        email=credentials.email,
+        full_name="System Administrator",
+        hashed_password=hash_password(credentials.password),
+        role="admin",
+        is_active=True,
+    )
+    
+    db.add(admin_user)
+    db.commit()
+    db.refresh(admin_user)
+    
+    access_token = create_access_token(
+        data={"user_id": admin_user.id}
+    )
+    return {"access_token": access_token}
 def operator_login(
     employee_number: str,
     password: str,
