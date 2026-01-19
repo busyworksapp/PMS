@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import logging
+import sys
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Create app first to avoid circular imports
 app = FastAPI(
@@ -18,29 +22,96 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Import models and routes after app creation
-from app.db.database import Base, engine
-from app.routes import auth, master, orders, defects
-from app.routes import maintenance, sop_ncr, jobs, whatsapp
-from app.routes import job_planning, finance
 
-# Initialize database tables
-try:
-    Base.metadata.create_all(bind=engine)
-except Exception as e:
-    print(f"Database initialization warning: {e}")
-
-# Register all routers
-app.include_router(auth.router)
-app.include_router(master.router)
-app.include_router(orders.router)
-app.include_router(jobs.router)
-app.include_router(job_planning.router)
-app.include_router(defects.router)
-app.include_router(maintenance.router)
-app.include_router(sop_ncr.router)
-app.include_router(finance.router)
-app.include_router(whatsapp.router)
+@app.on_event("startup")
+async def startup_event():
+    """Initialize on startup"""
+    try:
+        # Import and initialize database
+        from app.db.database import Base, engine
+        logger.info("Creating database tables...")
+        Base.metadata.create_all(bind=engine)
+        logger.info("Database tables created successfully")
+        
+        # Import and register routes one by one
+        logger.info("Importing routes...")
+        
+        try:
+            from app.routes import auth
+            logger.info("✓ Auth routes imported")
+            app.include_router(auth.router)
+        except Exception as e:
+            logger.error(f"Auth routes error: {e}")
+        
+        try:
+            from app.routes import master
+            logger.info("✓ Master routes imported")
+            app.include_router(master.router)
+        except Exception as e:
+            logger.error(f"Master routes error: {e}")
+        
+        try:
+            from app.routes import orders
+            logger.info("✓ Orders routes imported")
+            app.include_router(orders.router)
+        except Exception as e:
+            logger.error(f"Orders routes error: {e}")
+        
+        try:
+            from app.routes import defects
+            logger.info("✓ Defects routes imported")
+            app.include_router(defects.router)
+        except Exception as e:
+            logger.error(f"Defects routes error: {e}")
+        
+        try:
+            from app.routes import maintenance
+            logger.info("✓ Maintenance routes imported")
+            app.include_router(maintenance.router)
+        except Exception as e:
+            logger.error(f"Maintenance routes error: {e}")
+        
+        try:
+            from app.routes import sop_ncr
+            logger.info("✓ SOP/NCR routes imported")
+            app.include_router(sop_ncr.router)
+        except Exception as e:
+            logger.error(f"SOP/NCR routes error: {e}")
+        
+        try:
+            from app.routes import jobs
+            logger.info("✓ Jobs routes imported")
+            app.include_router(jobs.router)
+        except Exception as e:
+            logger.error(f"Jobs routes error: {e}")
+        
+        try:
+            from app.routes import job_planning
+            logger.info("✓ Job planning routes imported")
+            app.include_router(job_planning.router)
+        except Exception as e:
+            logger.error(f"Job planning routes error: {e}")
+        
+        try:
+            from app.routes import finance
+            logger.info("✓ Finance routes imported")
+            app.include_router(finance.router)
+        except Exception as e:
+            logger.error(f"Finance routes error: {e}")
+        
+        try:
+            from app.routes import whatsapp
+            logger.info("✓ WhatsApp routes imported")
+            app.include_router(whatsapp.router)
+        except Exception as e:
+            logger.error(f"WhatsApp routes error: {e}")
+        
+        logger.info("Application startup complete!")
+        sys.stdout.flush()
+        
+    except Exception as e:
+        logger.error(f"Fatal startup error: {e}", exc_info=True)
+        raise
 
 
 @app.get("/")
