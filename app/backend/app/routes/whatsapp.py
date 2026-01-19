@@ -54,25 +54,27 @@ async def receive_twilio_webhook(
     POST /api/whatsapp/twilio-webhook
     """
     try:
-        # Get form data from Twilio
-        form_data = await request.form()
-        payload = dict(form_data)
-
         # Get signature from header
         signature = request.headers.get(
             "X-Twilio-Signature", ""
         )
 
+        # Get raw body FIRST for signature verification
+        body = await request.body()
+        body_str = body.decode("utf-8")
+
         # Verify webhook signature
         if twilio_whatsapp_service:
-            body = await request.body()
-            body_str = body.decode("utf-8")
             if not twilio_whatsapp_service.verify_webhook_signature(
                 signature, body_str
             ):
                 logger.warning("Invalid Twilio webhook signature")
                 # Note: Still process for now, verification may
                 # need setup in production
+
+        # NOW get form data from Twilio
+        form_data = await request.form()
+        payload = dict(form_data)
 
         # Handle incoming message
         if twilio_whatsapp_service:
