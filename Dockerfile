@@ -17,6 +17,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend code
 COPY app/backend/app ./app
 
+# Copy startup script
+COPY start.sh ./start.sh
+RUN chmod +x ./start.sh
+
 # Expose port
 EXPOSE 8000
 
@@ -24,5 +28,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
-# Run uvicorn with longer startup timeout and proper signal handling
-CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--timeout-keep-alive", "65"]
+# Run using shell script for proper environment variable expansion
+CMD ["./start.sh"]
