@@ -1,7 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 import logging
 import sys
+import os
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -126,6 +129,15 @@ async def startup_event():
         except Exception as e:
             logger.error(f"WhatsApp routes error: {e}")
         
+        # Mount static files (frontend)
+        try:
+            frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "frontend")
+            if os.path.exists(frontend_path):
+                app.mount("/static", StaticFiles(directory=frontend_path), name="static")
+                logger.info(f"✓ Frontend static files mounted from {frontend_path}")
+        except Exception as e:
+            logger.warning(f"Could not mount static files: {e}")
+        
         logger.info("Application startup complete!")
         sys.stdout.flush()
         
@@ -135,8 +147,17 @@ async def startup_event():
 
 
 @app.get("/")
-def read_root():
-    """Root endpoint - returns API information."""
+async def read_root():
+    """Root endpoint - serves the login page."""
+    try:
+        # Try to serve the login HTML
+        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "login.html")
+        if os.path.exists(frontend_path):
+            return FileResponse(frontend_path, media_type="text/html")
+    except Exception as e:
+        logger.warning(f"Could not serve login.html: {e}")
+    
+    # Fallback to API info
     return {
         "message": "Barron Production Management System",
         "version": "1.0.0",
@@ -160,3 +181,64 @@ def read_root():
 def health_check():
     """Health check endpoint."""
     return {"status": "ok"}
+
+
+# Frontend page routes
+@app.get("/login")
+async def login_page():
+    """Serve login page."""
+    try:
+        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "login.html")
+        if os.path.exists(frontend_path):
+            return FileResponse(frontend_path, media_type="text/html")
+    except Exception as e:
+        logger.warning(f"Could not serve login.html: {e}")
+    return {"error": "Login page not found"}
+
+
+@app.get("/dashboard")
+async def dashboard_page():
+    """Serve dashboard page."""
+    try:
+        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "dashboard.html")
+        if os.path.exists(frontend_path):
+            return FileResponse(frontend_path, media_type="text/html")
+    except Exception as e:
+        logger.warning(f"Could not serve dashboard.html: {e}")
+    return {"error": "Dashboard page not found"}
+
+
+@app.get("/admin")
+async def admin_page():
+    """Serve admin page."""
+    try:
+        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "admin.html")
+        if os.path.exists(frontend_path):
+            return FileResponse(frontend_path, media_type="text/html")
+    except Exception as e:
+        logger.warning(f"Could not serve admin.html: {e}")
+    return {"error": "Admin page not found"}
+
+
+@app.get("/orders")
+async def orders_page():
+    """Serve orders page."""
+    try:
+        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "order-list.html")
+        if os.path.exists(frontend_path):
+            return FileResponse(frontend_path, media_type="text/html")
+    except Exception as e:
+        logger.warning(f"Could not serve order-list.html: {e}")
+    return {"error": "Orders page not found"}
+
+
+@app.get("/maintenance")
+async def maintenance_page():
+    """Serve maintenance page."""
+    try:
+        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "maintenance.html")
+        if os.path.exists(frontend_path):
+            return FileResponse(frontend_path, media_type="text/html")
+    except Exception as e:
+        logger.warning(f"Could not serve maintenance.html: {e}")
+    return {"error": "Maintenance page not found"}
