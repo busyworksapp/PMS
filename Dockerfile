@@ -29,4 +29,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
 # Run using shell script for proper environment variable expansion
-CMD ["./start.sh"]
+# Using shell form (not JSON array) so environment variables are expanded
+CMD /bin/sh -c './start.sh'
