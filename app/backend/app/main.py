@@ -27,11 +27,31 @@ app.add_middleware(
 async def startup_event():
     """Initialize on startup"""
     try:
-        # Import and initialize database
+        # Import and initialize database with retries
         from app.db.database import Base, engine
+        from sqlalchemy import text
+        
         logger.info("Creating database tables...")
-        Base.metadata.create_all(bind=engine)
-        logger.info("Database tables created successfully")
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                # Test connection first
+                with engine.connect() as conn:
+                    conn.execute(text("SELECT 1"))
+                    logger.info("Database connection successful")
+                
+                # Create tables
+                Base.metadata.create_all(bind=engine)
+                logger.info("Database tables created successfully")
+                break
+            except Exception as db_error:
+                if attempt < max_retries - 1:
+                    logger.warning(f"Database connection attempt {attempt + 1} failed: {db_error}, retrying...")
+                    import time
+                    time.sleep(2)
+                else:
+                    logger.error(f"Database initialization failed after {max_retries} attempts: {db_error}")
+                    # Don't raise - let the app start anyway so we can serve health checks
         
         # Import and register routes one by one
         logger.info("Importing routes...")
