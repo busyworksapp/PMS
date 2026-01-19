@@ -131,12 +131,14 @@ async def startup_event():
         
         # Mount static files (frontend)
         try:
-            frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "frontend")
+            frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "frontend")
             if os.path.exists(frontend_path):
                 app.mount("/static", StaticFiles(directory=frontend_path), name="static")
                 logger.info(f"✓ Frontend static files mounted from {frontend_path}")
+            else:
+                logger.warning(f"Frontend path not found: {frontend_path}")
         except Exception as e:
-            logger.warning(f"Could not mount static files: {e}")
+            logger.warning(f"Could not mount static files: {e}", exc_info=True)
         
         logger.info("Application startup complete!")
         sys.stdout.flush()
@@ -151,11 +153,16 @@ async def read_root():
     """Root endpoint - serves the login page."""
     try:
         # Try to serve the login HTML
-        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "login.html")
+        # Path: /app/app/main.py -> /app/frontend/login.html
+        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "frontend", "login.html")
+        logger.info(f"Looking for login.html at: {frontend_path}")
         if os.path.exists(frontend_path):
+            logger.info(f"Found login.html, serving it")
             return FileResponse(frontend_path, media_type="text/html")
+        else:
+            logger.warning(f"login.html not found at: {frontend_path}")
     except Exception as e:
-        logger.warning(f"Could not serve login.html: {e}")
+        logger.warning(f"Could not serve login.html: {e}", exc_info=True)
     
     # Fallback to API info
     return {
@@ -188,7 +195,7 @@ def health_check():
 async def login_page():
     """Serve login page."""
     try:
-        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "login.html")
+        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "frontend", "login.html")
         if os.path.exists(frontend_path):
             return FileResponse(frontend_path, media_type="text/html")
     except Exception as e:
@@ -200,7 +207,7 @@ async def login_page():
 async def dashboard_page():
     """Serve dashboard page."""
     try:
-        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "dashboard.html")
+        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "frontend", "dashboard.html")
         if os.path.exists(frontend_path):
             return FileResponse(frontend_path, media_type="text/html")
     except Exception as e:
@@ -212,7 +219,7 @@ async def dashboard_page():
 async def admin_page():
     """Serve admin page."""
     try:
-        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "admin.html")
+        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "frontend", "admin.html")
         if os.path.exists(frontend_path):
             return FileResponse(frontend_path, media_type="text/html")
     except Exception as e:
@@ -224,7 +231,7 @@ async def admin_page():
 async def orders_page():
     """Serve orders page."""
     try:
-        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "order-list.html")
+        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "frontend", "order-list.html")
         if os.path.exists(frontend_path):
             return FileResponse(frontend_path, media_type="text/html")
     except Exception as e:
@@ -236,7 +243,7 @@ async def orders_page():
 async def maintenance_page():
     """Serve maintenance page."""
     try:
-        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "maintenance.html")
+        frontend_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "frontend", "maintenance.html")
         if os.path.exists(frontend_path):
             return FileResponse(frontend_path, media_type="text/html")
     except Exception as e:
