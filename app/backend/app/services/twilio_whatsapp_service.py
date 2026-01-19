@@ -272,7 +272,7 @@ class TwilioWhatsAppService:
                 media_url=media_url,
                 status="received",
                 direction="inbound",
-                received_at=datetime.utcnow(),
+                created_at=datetime.utcnow(),
             )
             db.add(db_message)
 

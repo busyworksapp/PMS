@@ -56,8 +56,7 @@ class Order(Base):
         "OrderSchedule", back_populates="order",
         cascade="all, delete-orphan"
     )
-    rejects = relationship("InternalReject", back_populates="order")
-    defects = relationship("InternalReject", back_populates="order", foreign_keys="InternalReject.order_id")
+    rejects = relationship("InternalReject", back_populates="order", foreign_keys="InternalReject.order_id")
     exceptions = relationship("ProductionException", back_populates="order")
 
 

@@ -106,7 +106,7 @@ class InternalReject(Base):
     )
     
     # Relationships
-    order = relationship("Order", back_populates="defects")
+    order = relationship("Order", back_populates="rejects")
     item = relationship("OrderItem", back_populates="defects")
     product = relationship("Product")
     department = relationship("Department")

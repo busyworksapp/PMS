@@ -8,12 +8,10 @@ class APIClient {
         // Determine base URL dynamically based on environment
         if (baseUrl) {
             this.baseUrl = baseUrl;
-        } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            // Development: use localhost
-            this.baseUrl = 'http://127.0.0.1:8000';
         } else {
-            // Production: use same domain as frontend
-            this.baseUrl = `${window.location.protocol}//${window.location.hostname}:8000`;
+            // Use empty string - this makes all requests relative to current origin
+            // Works seamlessly in both dev and production
+            this.baseUrl = '';
         }
         
         this.token = localStorage.getItem('auth_token');
